@@ -18,7 +18,6 @@ to create the game myself as my first personal project in Java.
 
 ## User Stories
 
-- As a user, I want to be able to declare my name at the start of the game
 - As a user, I want to be able to add money to my in-game balance
 - As a user, I want to be able to place a bet and receive two cards
 - As a user, I want to be able to add another card to my hand
