@@ -33,14 +33,14 @@ public class Deck {
     }
 
 
-//    // EFFECTS: returns the deck as a list of string
-//    public List<String> printDeck() {
-//        List<String> stringOfDeck = new ArrayList<>();
-//        for (Card c : cards) {
-//            stringOfDeck.add(c.printCard());
-//        }
-//        return stringOfDeck;
-//    }
+    // EFFECTS: returns the deck as a string, with each card on a new line
+    public String printDeck() {
+        String stringOfDeck = "";
+        for (Card c : cards) {
+            stringOfDeck += c.getFaceName() + " of " + c.getSuit() + "\n";
+        }
+        return stringOfDeck;
+    }
 
 
     // MODIFIES: this
@@ -83,9 +83,20 @@ public class Deck {
     }
 
 
+    // EFFECTS: return a list of string of the suits of all the cards in the deck
+    public List<String> getSuits() {
+        List<String> suits = new ArrayList<>();
+        for (Card c : cards) {
+            suits.add(c.getSuit());
+        }
+        return suits;
+    }
+
+
     // MODIFIES: this
     // EFFECTS: return the sum of all the card values following the Blackjack rule for Aces
     public int getDeckValue() {
+        deckValue = 0;  //MVP line
         for (Card c : cards) {
             deckValue += c.getCardValue();
         }

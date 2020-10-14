@@ -29,7 +29,7 @@ public class Dealer {
     // MODIFIES: this
     // EFFECTS: adds another card to dealerHand until deck value >= 17
     public void hit() {
-        if (dealerHand.getDeckValue() < 17) {
+        while (dealerHand.getDeckValue() < 17) {
             dealerHand.drawCard();
         }
     }
@@ -37,10 +37,21 @@ public class Dealer {
 
     // REQUIRES: Dealer must have drawn 2 cards then hit at least once
     // MODIFIES: this
-    // EFFECTS: if dealerHand is a bust, then reset the hand of cards
-    public void bust() {
+    // EFFECTS: if dealerHand is a bust, then reset the hand of cards and return true;
+    //          otherwise, return false
+    public boolean bust() {
         if (dealerHand.isBust()) {
             dealerHand = new Deck();
+            return true;
+        } else {
+            return false;
         }
     }
+
+
+    // EFFECTS: returns the first card in the deck as a string
+    public String showFirstCard() {
+        return dealerHand.getFaceNames().get(0) + " of " + dealerHand.getSuits().get(0);
+    }
+
 }

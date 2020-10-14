@@ -17,6 +17,13 @@ public class DeckTest {
     }
 
     @Test
+    void testPrintDeck() {
+        testDeck.addCard("Ace", "Spades");
+        testDeck.addCard("Two", "Hearts");
+        assertEquals("Ace of Spades\nTwo of Hearts\n", testDeck.printDeck());
+    }
+
+    @Test
     void testAddCard() {
         testDeck.addCard("Ace", "Spades");
         assertEquals(1, testDeck.length());
@@ -52,6 +59,19 @@ public class DeckTest {
         faceNames.add("King");
 
         assertEquals(faceNames, testDeck.getFaceNames());
+    }
+
+    @Test
+    void testGetSuits() {
+        testDeck.addCard("Ace", "Spades");
+        testDeck.addCard("Two", "Hearts");
+        testDeck.addCard("King", "Clubs");
+        List<String> suits = new ArrayList<>();
+        suits.add("Spades");
+        suits.add("Hearts");
+        suits.add("Clubs");
+
+        assertEquals(suits, testDeck.getSuits());
     }
 
     @Test

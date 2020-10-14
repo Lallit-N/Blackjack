@@ -45,7 +45,7 @@ public class DealerTest {
         testDealer.getDealerHand().addCard("Eight", "Hearts");
         assertEquals(3, testDealer.getDealerHand().length());
 
-        testDealer.bust();
+        assertTrue(testDealer.bust());
         assertEquals(0, testDealer.getDealerHand().length());
     }
 
@@ -55,7 +55,14 @@ public class DealerTest {
         testDealer.getDealerHand().addCard("Nine", "Hearts");
         assertEquals(2, testDealer.getDealerHand().length());
 
-        testDealer.bust();
+        assertFalse(testDealer.bust());
         assertEquals(2, testDealer.getDealerHand().length());
+    }
+
+    @Test
+    void testShowFirstCard() {
+        testDealer.getDealerHand().addCard("King", "Hearts");
+        testDealer.getDealerHand().addCard("Eight", "Spades");
+        assertEquals("King of Hearts", testDealer.showFirstCard());
     }
 }

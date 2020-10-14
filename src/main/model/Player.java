@@ -6,6 +6,7 @@ public class Player {
     private int playerBalance;
     private Deck playerHand;
     private int bet;
+    private int deckValue;
 
 
     // EFFECTS: creates a new Player with balance, empty hand, and 0 bet
@@ -58,6 +59,7 @@ public class Player {
     // EFFECTS: adds another card to playerHand
     public void hit() {
         playerHand.drawCard();
+
     }
 
 
@@ -78,24 +80,78 @@ public class Player {
 
     // REQUIRES: both Player and Dealer decks must have at least 2 cards (meaning that the
     //           Player has placed a bet)
-    // EFFECTS: if both decks have same value, return bet to Player's balance
-    public void push(Deck deck) {
-        if (playerHand.getDeckValue() == deck.getDeckValue()) {
+    // MODIFIES: this
+    // EFFECTS: if both decks have same value, return bet to Player's balance, reset hand and return true; otherwise,
+    //          return false
+    public boolean push(Dealer dealer) {
+        if (playerHand.getDeckValue() == dealer.getDealerHand().getDeckValue()) {
             playerBalance += bet;
             bet = 0;
+            playerHand = new Deck();
+            return true;
+        } else {
+            return false;
         }
+    }
+
+
+    // REQUIRES: both Player and Dealer decks must have at least 2 cards (meaning that the
+    //           Player has placed a bet)
+    // MODIFIES: this
+    // EFFECTS: if playerHand has greater value than dealerHand, return true, add 2*bet to Balance, and reset
+    //          bet and hand; otherwise, return false and reset bet and hand
+    public boolean stand(Dealer dealer) {
+        if (playerHand.getDeckValue() > dealer.getDealerHand().getDeckValue()) {
+            playerBalance += 2 * bet;
+            bet = 0;
+            playerHand = new Deck();
+            return true;
+        } else {
+            bet = 0;
+            playerHand = new Deck();
+            return false;
+        }
+    }
+
+
+    // REQUIRES: only called when dealer busts
+    // MODIFIES: this
+    // EFFECTS: updates the player's balance and hand, as well as setting the bet back to 0
+    public void win() {
+        playerBalance += 2 * bet;
+        bet = 0;
+        playerHand = new Deck();
     }
 
 
     // REQUIRES: Player must have drawn 2 cards then hit at least once
     // MODIFIES: this
-    // EFFECTS: if playerHand is a bust, then lose bet money and get an empty hand of cards
-    public void bust() {
+    // EFFECTS: if playerHand is a bust, lose bet money and get an empty hand of cards and return true;
+    //          otherwise, return false
+    public boolean bust() {
         if (playerHand.isBust()) {
             bet = 0;
             playerHand = new Deck();
+            return true;
+        } else {
+            return false;
         }
     }
 
+
+    // REQUIRES: playerHand can only have 2 cards
+    // MODIFIES: this
+    // EFFECTS: return true if value of playerHand equals 21 and add 2.5*bet to player balance, and
+    //          reset bet and hand; otherwise, return false
+    public boolean blackjack() {
+        if (playerHand.getDeckValue() == 21) {
+            playerBalance += 2.5 * bet;
+            bet = 0;
+            playerHand = new Deck();
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }
