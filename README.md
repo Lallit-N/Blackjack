@@ -18,9 +18,9 @@ to create the game myself as my first personal project in Java.
 
 ## User Stories
 
-- As a user, I want to be able to add money to my in-game balance
+- As a user, I want to be able to buy in to the game
 - As a user, I want to be able to place a bet and receive two cards
-- As a user, I want to be able to add another card to my hand
+- As a user, I want to be able to add another card to my hand (add X's to Y)
 - As a user, I want to be able to choose whether to **hit**, **stand**, or **double** my bet and hit
 - As a user, I want to be able to leave the game and cash out
 
