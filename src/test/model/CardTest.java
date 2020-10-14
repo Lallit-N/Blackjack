@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static model.Card.FACE_NAMES;
-import static model.Card.SUITS;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CardTest {

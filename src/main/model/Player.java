@@ -6,7 +6,6 @@ public class Player {
     private int playerBalance;
     private Deck playerHand;
     private int bet;
-    private int deckValue;
 
 
     // EFFECTS: creates a new Player with balance, empty hand, and 0 bet

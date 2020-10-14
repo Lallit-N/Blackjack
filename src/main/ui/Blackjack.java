@@ -5,6 +5,8 @@ import model.Player;
 
 import java.util.Scanner;
 
+// Used ca.ubc.cpsc210.bank.ui.TellerApp as a general guideline to start designing this class
+
 // Blackjack Game
 public class Blackjack {
     private Player player;
@@ -21,7 +23,7 @@ public class Blackjack {
     // MODIFIES: this
     // EFFECTS: processes user input
     public void runBlackjack() {
-        String command = null;
+        String command;
         input = new Scanner(System.in);
 
         System.out.println("Welcome to Blackjack!");
@@ -59,7 +61,7 @@ public class Blackjack {
     // EFFECTS: initialize Player
     private void makePlayer() {
         boolean notDone = true;
-        int command = 0;
+        int command;
 
         System.out.println("Please enter your buy-in amount...");
         command = input.nextInt();
@@ -81,9 +83,9 @@ public class Blackjack {
     private void placeBet() {
         dealer = new Dealer();
         boolean notDone = true;
-        int command = 0;
+        int command;
 
-        System.out.println("\nBalance: $" + player.getPlayerBalance());
+        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
         System.out.println("How much would you like to bet?");
         command = input.nextInt();
 
@@ -107,12 +109,13 @@ public class Blackjack {
     void printHands() {
         System.out.println("\nYour Hand:\n" + player.getPlayerHand().printDeck());
         System.out.println("Your Hand Value: " + player.getPlayerHand().getDeckValue());
-        System.out.println("\nDealer's Hand:\n" + dealer.showFirstCard() + "\n[HIDDEN CARD]");
+        System.out.println("\n\nDealer's Hand:\n" + dealer.showFirstCard() + "\n[HIDDEN CARD]");
     }
 
     // EFFECTS: displays options to Player
     private void displayOptions() {
-        System.out.println("\nSelect:");
+        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+        System.out.println("Select:");
         System.out.println("\th -> hit");
         System.out.println("\td -> double");
         System.out.println("\ts -> stand");
@@ -145,7 +148,7 @@ public class Blackjack {
     // MODIFIES: this
     // EFFECTS: draw a card to the Player's hand; the Player either busts, or gets more options
     private void doHit() {
-        String command = null;
+        String command;
 
         player.hit();
         printHands();
@@ -165,7 +168,8 @@ public class Blackjack {
 
     // EFFECTS: display options that the Player has after hitting
     private void afterHitOptions() {
-        System.out.println("\nSelect:");
+        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+        System.out.println("Select:");
         System.out.println("\th -> hit");
         System.out.println("\ts -> stand");
     }
@@ -193,7 +197,7 @@ public class Blackjack {
     // MODIFIES: this
     // EFFECTS: double Player's bet and draw a card; the Player either busts, or gets more options
     private void doDouble() {
-        String command = null;
+        String command;
 
         player.doubleBet();
         printHands();
@@ -219,7 +223,7 @@ public class Blackjack {
             System.out.println("\nDealer hits...\n");
         }
 
-        System.out.println("\nFinal Hands:\n");
+        System.out.println("\n\nFinal Hands:\n");
         showHands();
 
         if (dealer.bust()) {
@@ -242,7 +246,7 @@ public class Blackjack {
     void showHands() {
         System.out.println("Your Hand:\n" + player.getPlayerHand().printDeck());
         System.out.println("Your Hand Value: " + player.getPlayerHand().getDeckValue());
-        System.out.println("\nDealer's Hand:\n" + dealer.getDealerHand().printDeck());
+        System.out.println("\n\nDealer's Hand:\n" + dealer.getDealerHand().printDeck());
         System.out.println("Dealer Hand Value: " + dealer.getDealerHand().getDeckValue());
     }
 
@@ -250,10 +254,11 @@ public class Blackjack {
     // EFFECTS: asks the player if they would like to play again or leave the table
     void playAgain() {
         boolean notDone = true;
-        String command = null;
+        String command;
 
-        System.out.println("\nWould You Like To Play Again?");
-        System.out.println("\nSelect:");
+        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+        System.out.println("Would You Like To Play Again?");
+        System.out.println("Select:");
         System.out.println("\ty -> yes");
         System.out.println("\tc -> cash out");
         command = input.next();
