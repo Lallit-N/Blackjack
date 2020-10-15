@@ -204,15 +204,9 @@ public class Blackjack {
     }
 
     // MODIFIES: this
-    // EFFECTS: shows player and dealer hands, dealer hits if dealerHand value < 17, then shows final hands and
-    //          compares player and dealer hands to determine the overall outcome of the round
+    // EFFECTS: compares player and dealer hands to determine the overall outcome of the round
     private void doStand() {
-        showHands();
-
         doDealerHit();
-
-        System.out.println("\n\nFinal Hands:\n");
-        showHands();
 
         if (dealer.bust()) {
             player.win();
@@ -229,12 +223,18 @@ public class Blackjack {
     }
 
     // MODIFIES: this
-    // EFFECTS: if dealerHand value is less than 17, then dealer hits until dealerHand value is 17 or more
+    // EFFECTS: if dealerHand value is less than 17, then dealer hits until dealerHand value is 17 or more,
+    //          then shows final hands of both the player and dealer
     void doDealerHit() {
         if (dealer.getDealerHand().getDeckValue() < 17) {
+            showHands();
             dealer.hit();
-            System.out.println("\nDealer hits...\n");
+            System.out.println("\n\nDealer hits...");
+        } else {
+            System.out.println("\nDealer does not hit...");
         }
+        System.out.println("\nFinal Hands:");
+        showHands();
     }
 
     // EFFECTS: show final hands of player and dealer
