@@ -21,27 +21,21 @@ public class Blackjack {
 
 
     // MODIFIES: this
-    // EFFECTS: processes user input
+    // EFFECTS: starts the game
     public void runBlackjack() {
         String command;
         input = new Scanner(System.in);
 
-        System.out.println("Welcome to Blackjack!");
-
-        makePlayer();
+        initialize();
 
         while (keepRunning && player.getPlayerBalance() > 0) {
-
             placeBet();
 
             if (player.blackjack()) {
-                System.out.println("BLACKJACK!!!");
-                if (player.getPlayerBalance() > 0) {
-                    playAgain();
-                }
+                System.out.println("\nBLACKJACK!!!");
+                playAgain();
             } else {
                 displayOptions();
-
                 command = input.next();
                 command = command.toLowerCase();
 
@@ -52,17 +46,17 @@ public class Blackjack {
                 }
             }
         }
-
         System.out.println("\nGoodbye!");
     }
 
     // REQUIRES: input must be an integer value only (no letters or special characters)
     // MODIFIES: this
-    // EFFECTS: initialize Player
-    private void makePlayer() {
+    // EFFECTS: display welcome message and initialize the Player with user input
+    private void initialize() {
         boolean notDone = true;
         int command;
 
+        System.out.println("Welcome to Blackjack!");
         System.out.println("Please enter your buy-in amount...");
         command = input.nextInt();
 
@@ -79,7 +73,7 @@ public class Blackjack {
 
     // REQUIRES: input must be an integer value only (no letters or special characters)
     // MODIFIES: this
-    // EFFECTS: places a bet and draws two cards
+    // EFFECTS: user places a bet and draws two cards
     private void placeBet() {
         dealer = new Dealer();
         boolean notDone = true;
@@ -100,9 +94,7 @@ public class Blackjack {
                 command = input.nextInt();
             }
         }
-
         printHands();
-
     }
 
     // EFFECTS: print the player and dealer hands (dealer has hidden card)
@@ -155,9 +147,7 @@ public class Blackjack {
 
         if (player.bust()) {
             System.out.println("\nBUST");
-            if (player.getPlayerBalance() > 0) {
-                playAgain();
-            }
+            playAgain();
         } else {
             afterHitOptions();
             command = input.next();
@@ -175,7 +165,7 @@ public class Blackjack {
     }
 
     // MODIFIES: this
-    // EFFECTS: processes Player's command
+    // EFFECTS: processes Player's command after they already hit or double and hit
     private void processCommandAfterHit(String command) {
         boolean notDone = true;
         String cmd = command;
@@ -204,9 +194,7 @@ public class Blackjack {
 
         if (player.bust()) {
             System.out.println("\nBUST");
-            if (player.getPlayerBalance() > 0) {
-                playAgain();
-            }
+            playAgain();
         } else {
             afterHitOptions();
             command = input.next();
@@ -215,13 +203,13 @@ public class Blackjack {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: shows player and dealer hands, dealer hits if dealerHand value < 17, then shows final hands and
+    //          compares player and dealer hands to determine the overall outcome of the round
     private void doStand() {
         showHands();
 
-        if (dealer.getDealerHand().getDeckValue() < 17) {
-            dealer.hit();
-            System.out.println("\nDealer hits...\n");
-        }
+        doDealerHit();
 
         System.out.println("\n\nFinal Hands:\n");
         showHands();
@@ -237,8 +225,15 @@ public class Blackjack {
             System.out.println("\nDEALER WINS");
         }
 
-        if (player.getPlayerBalance() > 0) {
-            playAgain();
+        playAgain();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if dealerHand value is less than 17, then dealer hits until dealerHand value is 17 or more
+    void doDealerHit() {
+        if (dealer.getDealerHand().getDeckValue() < 17) {
+            dealer.hit();
+            System.out.println("\nDealer hits...\n");
         }
     }
 
@@ -251,28 +246,35 @@ public class Blackjack {
     }
 
     // MODIFIES: this
-    // EFFECTS: asks the player if they would like to play again or leave the table
+    // EFFECTS: asks the player if they would like to play again or leave the table, if their balance > 0
     void playAgain() {
         boolean notDone = true;
         String command;
 
+        if (player.getPlayerBalance() > 0) {
+            playAgainOptions();
+            command = input.next();
+
+            while (notDone) {
+                if (command.equals("c")) {
+                    keepRunning = false;
+                    notDone = false;
+                } else if (command.equals("y")) {
+                    notDone = false;
+                } else {
+                    System.out.println("Please make a valid selection...");
+                    command = input.next();
+                }
+            }
+        }
+    }
+
+    // EFFECTS: display play again options to user
+    void playAgainOptions() {
         System.out.println("\nYour Balance: $" + player.getPlayerBalance());
         System.out.println("Would You Like To Play Again?");
         System.out.println("Select:");
         System.out.println("\ty -> yes");
         System.out.println("\tc -> cash out");
-        command = input.next();
-
-        while (notDone) {
-            if (command.equals("c")) {
-                keepRunning = false;
-                notDone = false;
-            } else if (command.equals("y")) {
-                notDone = false;
-            } else {
-                System.out.println("Please make a valid selection...");
-                command = input.next();
-            }
-        }
     }
 }
