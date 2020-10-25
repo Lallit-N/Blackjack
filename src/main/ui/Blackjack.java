@@ -2,20 +2,27 @@ package ui;
 
 import model.Dealer;
 import model.Player;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
 import java.util.Scanner;
 
-// Used ca.ubc.cpsc210.bank.ui.TellerApp as a general guideline to start designing this class
+// modelled after ca.ubc.cpsc210.bank.ui.TellerApp from https://github.students.cs.ubc.ca/CPSC210/TellerApp
 
 // Blackjack Game
 public class Blackjack {
+    private static final String JSON_STORE = "./data/player.json";
     private Player player;
     private Dealer dealer;
     private Scanner input;
     boolean keepRunning = true;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // EFFECTS: runs the Blackjack game
     public Blackjack() {
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
         runBlackjack();
     }
 
@@ -70,6 +77,7 @@ public class Blackjack {
             }
         }
     }
+
 
     // REQUIRES: input must be an integer value only (no letters or special characters)
     // MODIFIES: this

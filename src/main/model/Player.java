@@ -1,14 +1,18 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 // represents a Blackjack Player having a balance, hand of cards, and a bet
-public class Player {
+public class Player implements Writable {
 
     private int playerBalance;
     private Deck playerHand;
     private int bet;
+    private static final int INITIAL_BALANCE = 25000;
 
 
-    // EFFECTS: creates a new Player with balance, empty hand, and 0 bet
+    // EFFECTS: creates a new Player with balance of INITIAL_BALANCE, empty hand, and 0 bet
     public Player(int balance) {
         playerBalance = balance;
         playerHand = new Deck();
@@ -153,4 +157,10 @@ public class Player {
         }
     }
 
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("balance", playerBalance);
+        return json;
+    }
 }
