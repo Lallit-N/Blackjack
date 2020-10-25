@@ -22,5 +22,7 @@ to create the game myself as my first personal project in Java.
 - As a user, I want to be able to place a bet and receive two cards
 - As a user, I want to be able to add another card to my hand (add X's to Y)
 - As a user, I want to be able to choose whether to **hit**, **stand**, or **double** my bet and hit
-- As a user, I want to be able to leave the game and cash out
+- As a user, I want to be able to cash out from the table (add my winnings to my total balance)
+- As a user, when I start the app, I want to choose to either load my last player balance or start as a new player
+
 
