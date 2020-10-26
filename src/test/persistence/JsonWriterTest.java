@@ -35,7 +35,7 @@ public class JsonWriterTest {
 
             JsonReader reader = new JsonReader("./data/testWriterPlayer.json");
             player = reader.read();
-            assertEquals(12345, player.getPlayerBalance());
+            assertEquals(12345, player.getBalance());
         } catch (IOException e) {
             fail("Exception should not have been thrown");
         }

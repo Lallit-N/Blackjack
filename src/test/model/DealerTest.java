@@ -15,54 +15,54 @@ public class DealerTest {
 
     @Test
     void testDrawCards() {
-        assertEquals(0, testDealer.getDealerHand().length());
+        assertEquals(0, testDealer.getHand().length());
         testDealer.drawCards();
-        assertEquals(2, testDealer.getDealerHand().length());
+        assertEquals(2, testDealer.getHand().length());
     }
 
     @Test
     void testHit() {
-        testDealer.getDealerHand().addCard("Seven", "Hearts");
-        testDealer.getDealerHand().addCard("Nine", "Hearts");
-        assertEquals(2, testDealer.getDealerHand().length());
+        testDealer.getHand().addCard("Seven", "Hearts");
+        testDealer.getHand().addCard("Nine", "Hearts");
+        assertEquals(2, testDealer.getHand().length());
         testDealer.hit();
-        assertEquals(3, testDealer.getDealerHand().length());
+        assertEquals(3, testDealer.getHand().length());
     }
 
     @Test
     void testNoHit() {
-        testDealer.getDealerHand().addCard("Ace", "Hearts");
-        testDealer.getDealerHand().addCard("Nine", "Hearts");
-        assertEquals(2, testDealer.getDealerHand().length());
+        testDealer.getHand().addCard("Ace", "Hearts");
+        testDealer.getHand().addCard("Nine", "Hearts");
+        assertEquals(2, testDealer.getHand().length());
         testDealer.hit();
-        assertEquals(2, testDealer.getDealerHand().length());
+        assertEquals(2, testDealer.getHand().length());
     }
 
     @Test
     void testBust() {
-        testDealer.getDealerHand().addCard("King", "Hearts");
-        testDealer.getDealerHand().addCard("Nine", "Hearts");
-        testDealer.getDealerHand().addCard("Eight", "Hearts");
-        assertEquals(3, testDealer.getDealerHand().length());
+        testDealer.getHand().addCard("King", "Hearts");
+        testDealer.getHand().addCard("Nine", "Hearts");
+        testDealer.getHand().addCard("Eight", "Hearts");
+        assertEquals(3, testDealer.getHand().length());
 
         assertTrue(testDealer.bust());
-        assertEquals(0, testDealer.getDealerHand().length());
+        assertEquals(0, testDealer.getHand().length());
     }
 
     @Test
     void testNotBust() {
-        testDealer.getDealerHand().addCard("King", "Hearts");
-        testDealer.getDealerHand().addCard("Nine", "Hearts");
-        assertEquals(2, testDealer.getDealerHand().length());
+        testDealer.getHand().addCard("King", "Hearts");
+        testDealer.getHand().addCard("Nine", "Hearts");
+        assertEquals(2, testDealer.getHand().length());
 
         assertFalse(testDealer.bust());
-        assertEquals(2, testDealer.getDealerHand().length());
+        assertEquals(2, testDealer.getHand().length());
     }
 
     @Test
     void testShowFirstCard() {
-        testDealer.getDealerHand().addCard("King", "Hearts");
-        testDealer.getDealerHand().addCard("Eight", "Spades");
+        testDealer.getHand().addCard("King", "Hearts");
+        testDealer.getHand().addCard("Eight", "Spades");
         assertEquals("King of Hearts", testDealer.showFirstCard());
     }
 }

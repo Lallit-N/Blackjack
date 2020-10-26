@@ -9,7 +9,6 @@ public class Player implements Writable {
     private int playerBalance;
     private Deck playerHand;
     private int bet;
-    private static final int INITIAL_BALANCE = 25000;
 
 
     // EFFECTS: creates a new Player with balance of INITIAL_BALANCE, empty hand, and 0 bet
@@ -20,12 +19,12 @@ public class Player implements Writable {
     }
 
 
-    public int getPlayerBalance() {
+    public int getBalance() {
         return playerBalance;
     }
 
 
-    public Deck getPlayerHand() {
+    public Deck getHand() {
         return playerHand;
     }
 
@@ -87,7 +86,7 @@ public class Player implements Writable {
     // EFFECTS: if both decks have same value, return bet to Player's balance, reset hand and return true; otherwise,
     //          return false
     public boolean push(Dealer dealer) {
-        if (playerHand.getDeckValue() == dealer.getDealerHand().getDeckValue()) {
+        if (playerHand.getDeckValue() == dealer.getHand().getDeckValue()) {
             playerBalance += bet;
             bet = 0;
             playerHand = new Deck();
@@ -104,7 +103,7 @@ public class Player implements Writable {
     // EFFECTS: if playerHand has greater value than dealerHand, return true, add 2*bet to Balance, and reset
     //          bet and hand; otherwise, return false and reset bet and hand
     public boolean stand(Dealer dealer) {
-        if (playerHand.getDeckValue() > dealer.getDealerHand().getDeckValue()) {
+        if (playerHand.getDeckValue() > dealer.getHand().getDeckValue()) {
             playerBalance += 2 * bet;
             bet = 0;
             playerHand = new Deck();

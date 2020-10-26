@@ -5,6 +5,8 @@ import model.Player;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 // modelled after ca.ubc.cpsc210.bank.ui.TellerApp from https://github.students.cs.ubc.ca/CPSC210/TellerApp
@@ -12,6 +14,7 @@ import java.util.Scanner;
 // Blackjack Game
 public class Blackjack {
     private static final String JSON_STORE = "./data/player.json";
+    private static final int INITIAL_BALANCE = 25000;
     private Player player;
     private Dealer dealer;
     private Scanner input;
@@ -28,56 +31,143 @@ public class Blackjack {
 
 
     // MODIFIES: this
-    // EFFECTS: starts the game
-    public void runBlackjack() {
-        String command;
+    // EFFECTS: runs the game
+    private void runBlackjack() {
         input = new Scanner(System.in);
 
         initialize();
 
-        while (keepRunning && player.getPlayerBalance() > 0) {
-            placeBet();
-
-            if (player.blackjack()) {
-                System.out.println("\nBLACKJACK!!!");
-                playAgain();
+        while (keepRunning) {
+            if (player.getBalance() == 0) {
+                askNewGame();
             } else {
-                displayOptions();
-                command = input.next();
-                command = command.toLowerCase();
-
-                if (command.equals("l")) {
-                    keepRunning = false;
-                } else {
-                    processCommand(command);
-                }
+                placeBet();
+                playGame();
             }
         }
         System.out.println("\nGoodbye!");
     }
 
-    // REQUIRES: input must be an integer value only (no letters or special characters)
     // MODIFIES: this
-    // EFFECTS: display welcome message and initialize the Player with user input
-    private void initialize() {
-        boolean notDone = true;
-        int command;
+    // EFFECTS: if player has blackjack, then update player accordingly and ask to play again;
+    //          otherwise, display options to the player
+    private void playGame() {
+        String command;
 
-        System.out.println("Welcome to Blackjack!");
-        System.out.println("Please enter your buy-in amount...");
-        command = input.nextInt();
+        if (player.blackjack()) {
+            System.out.println("\nBLACKJACK!!!");
+            playAgain();
+        } else {
+            displayOptions();
+            command = input.next();
+            command = command.toLowerCase();
 
-        while (notDone) {
-            if (command > 0) {
-                player = new Player(command);
-                notDone = false;
+            if (command.equals("l")) {
+                savePlayer();
             } else {
-                System.out.println("Please enter an amount greater than $0...");
-                command = input.nextInt();
+                processCommand(command);
             }
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: ask player if they would like to play again or not
+    private void askNewGame() {
+        boolean notDone = true;
+        String command;
+
+        newGameOptions();
+        command = input.next();
+        command = command.toLowerCase();
+
+        while (notDone) {
+            if (command.equals("y")) {
+                player = new Player(INITIAL_BALANCE);
+                notDone = false;
+            } else if (command.equals("n")) {
+                savePlayer();
+                notDone = false;
+            } else {
+                System.out.println("Please make a valid selection...");
+                command = input.next();
+            }
+        }
+    }
+
+    // EFFECTS: display new game options
+    private void newGameOptions() {
+        System.out.println("\nYou are officially BROKE!");
+        System.out.println("Would you like to start a new game?");
+        System.out.println("y -> yes");
+        System.out.println("n -> no");
+    }
+
+    // MODIFIES: this
+    // EFFECTS: display welcome message and initialize the Player with user input
+    private void initialize() {
+        System.out.println("Welcome to Blackjack!");
+        selectPlayer();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: user selects whether to load old balance or start the game as a new player
+    private void selectPlayer() {
+        boolean notDone = true;
+        String command;
+
+        selectPlayerOptions();
+        command = input.next();
+        command = command.toLowerCase();
+
+        while (notDone) {
+            if (command.equals("l")) {
+                loadPlayer();
+                playerIsBroke();
+                notDone = false;
+            } else if (command.equals("n")) {
+                player = new Player(INITIAL_BALANCE);
+                notDone = false;
+            } else {
+                System.out.println("Please make a valid selection...");
+                command = input.next();
+                command = command.toLowerCase();
+            }
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if saved player has 0 balance then start a new game
+    private void playerIsBroke() {
+        if (player.getBalance() == 0) {
+            System.out.println("\nYour saved Player has no money");
+            System.out.println("Starting new game...");
+            player = new Player(INITIAL_BALANCE);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: display options to either load saved game or start new game with respective balances
+    private void selectPlayerOptions() {
+        try {
+            player = jsonReader.read();
+        } catch (IOException e) {
+            System.out.println("There is no saved game");
+        }
+        System.out.println("\nWhat would you like to do:\n");
+        System.out.println("l -> load saved game with balance of $" + player.getBalance());
+        System.out.println("n -> start new game with balance of $" + INITIAL_BALANCE);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads player from file
+    private void loadPlayer() {
+        try {
+            player = jsonReader.read();
+            System.out.println("\nLoaded Player from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("\nUnable to read from file: " + JSON_STORE);
+        }
+    }
 
     // REQUIRES: input must be an integer value only (no letters or special characters)
     // MODIFIES: this
@@ -87,12 +177,12 @@ public class Blackjack {
         boolean notDone = true;
         int command;
 
-        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+        System.out.println("\nYour Balance: $" + player.getBalance());
         System.out.println("How much would you like to bet?");
         command = input.nextInt();
 
         while (notDone) {
-            if (command <= player.getPlayerBalance()) {
+            if (command <= player.getBalance()) {
                 player.placeBet(command);
                 player.drawCards();
                 dealer.drawCards();
@@ -106,15 +196,15 @@ public class Blackjack {
     }
 
     // EFFECTS: print the player and dealer hands (dealer has hidden card)
-    void printHands() {
-        System.out.println("\nYour Hand:\n" + player.getPlayerHand().printDeck());
-        System.out.println("Your Hand Value: " + player.getPlayerHand().getDeckValue());
+    private void printHands() {
+        System.out.println("\nYour Hand:\n" + player.getHand().printDeck());
+        System.out.println("Your Hand Value: " + player.getHand().getDeckValue());
         System.out.println("\n\nDealer's Hand:\n" + dealer.showFirstCard() + "\n[HIDDEN CARD]");
     }
 
     // EFFECTS: displays options to Player
     private void displayOptions() {
-        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+        System.out.println("\nYour Balance: $" + player.getBalance());
         System.out.println("Select:");
         System.out.println("\th -> hit");
         System.out.println("\td -> double");
@@ -166,7 +256,7 @@ public class Blackjack {
 
     // EFFECTS: display options that the Player has after hitting
     private void afterHitOptions() {
-        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+        System.out.println("\nYour Balance: $" + player.getBalance());
         System.out.println("Select:");
         System.out.println("\th -> hit");
         System.out.println("\ts -> stand");
@@ -233,8 +323,8 @@ public class Blackjack {
     // MODIFIES: this
     // EFFECTS: if dealerHand value is less than 17, then dealer hits until dealerHand value is 17 or more,
     //          then shows final hands of both the player and dealer
-    void doDealerHit() {
-        if (dealer.getDealerHand().getDeckValue() < 17) {
+    private void doDealerHit() {
+        if (dealer.getHand().getDeckValue() < 17) {
             showHands();
             dealer.hit();
             System.out.println("\n\nDealer hits...");
@@ -246,26 +336,26 @@ public class Blackjack {
     }
 
     // EFFECTS: show final hands of player and dealer
-    void showHands() {
-        System.out.println("Your Hand:\n" + player.getPlayerHand().printDeck());
-        System.out.println("Your Hand Value: " + player.getPlayerHand().getDeckValue());
-        System.out.println("\n\nDealer's Hand:\n" + dealer.getDealerHand().printDeck());
-        System.out.println("Dealer Hand Value: " + dealer.getDealerHand().getDeckValue());
+    private void showHands() {
+        System.out.println("Your Hand:\n" + player.getHand().printDeck());
+        System.out.println("Your Hand Value: " + player.getHand().getDeckValue());
+        System.out.println("\n\nDealer's Hand:\n" + dealer.getHand().printDeck());
+        System.out.println("Dealer Hand Value: " + dealer.getHand().getDeckValue());
     }
 
     // MODIFIES: this
     // EFFECTS: asks the player if they would like to play again or leave the table, if their balance > 0
-    void playAgain() {
+    private void playAgain() {
         boolean notDone = true;
         String command;
 
-        if (player.getPlayerBalance() > 0) {
+        if (player.getBalance() > 0) {
             playAgainOptions();
             command = input.next();
 
             while (notDone) {
                 if (command.equals("c")) {
-                    keepRunning = false;
+                    savePlayer();
                     notDone = false;
                 } else if (command.equals("y")) {
                     notDone = false;
@@ -278,11 +368,24 @@ public class Blackjack {
     }
 
     // EFFECTS: display play again options to user
-    void playAgainOptions() {
-        System.out.println("\nYour Balance: $" + player.getPlayerBalance());
+    private void playAgainOptions() {
+        System.out.println("\nYour Balance: $" + player.getBalance());
         System.out.println("Would You Like To Play Again?");
         System.out.println("Select:");
         System.out.println("\ty -> yes");
         System.out.println("\tc -> cash out");
+    }
+
+    // EFFECTS: saves player to file and sets keepRunning to false
+    private void savePlayer() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(player);
+            jsonWriter.close();
+            System.out.println("\nSaved Player to " + JSON_STORE);
+            keepRunning = false;
+        } catch (FileNotFoundException e) {
+            System.out.println("\nUnable to write to file: " + JSON_STORE);
+        }
     }
 }

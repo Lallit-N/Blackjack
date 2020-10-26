@@ -16,39 +16,39 @@ public class PlayerTest {
     @Test
     void testPlaceBetValid() {
         testPlayer.placeBet(25);
-        assertEquals(75, testPlayer.getPlayerBalance());
+        assertEquals(75, testPlayer.getBalance());
         assertEquals(25, testPlayer.getBet());
     }
 
     @Test
     void testPlaceBetInvalid() {
         testPlayer.placeBet(125);
-        assertEquals(100, testPlayer.getPlayerBalance());
+        assertEquals(100, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
     }
 
     @Test
     void testDrawCardsValid() {
-        assertEquals(0, testPlayer.getPlayerHand().length());
+        assertEquals(0, testPlayer.getHand().length());
         testPlayer.placeBet(50);
         testPlayer.drawCards();
-        assertEquals(2, testPlayer.getPlayerHand().length());
+        assertEquals(2, testPlayer.getHand().length());
     }
 
     @Test
     void testDrawCardsInvalid() {
-        assertEquals(0, testPlayer.getPlayerHand().length());
+        assertEquals(0, testPlayer.getHand().length());
         testPlayer.drawCards();
-        assertEquals(0, testPlayer.getPlayerHand().length());
+        assertEquals(0, testPlayer.getHand().length());
     }
 
     @Test
     void testHit() {
-        assertEquals(0, testPlayer.getPlayerHand().length());
+        assertEquals(0, testPlayer.getHand().length());
         testPlayer.hit();
-        assertEquals(1, testPlayer.getPlayerHand().length());
+        assertEquals(1, testPlayer.getHand().length());
         testPlayer.hit();
-        assertEquals(2, testPlayer.getPlayerHand().length());
+        assertEquals(2, testPlayer.getHand().length());
     }
 
     @Test
@@ -57,68 +57,68 @@ public class PlayerTest {
         assertEquals(30, testPlayer.getBet());
 
         testPlayer.doubleBet();
-        assertEquals(40, testPlayer.getPlayerBalance());
+        assertEquals(40, testPlayer.getBalance());
         assertEquals(60, testPlayer.getBet());
-        assertEquals(1, testPlayer.getPlayerHand().length());
+        assertEquals(1, testPlayer.getHand().length());
     }
 
     @Test
     void testDoubleBetJustHit() {
         testPlayer.placeBet(70);
         assertEquals(70, testPlayer.getBet());
-        assertEquals(30, testPlayer.getPlayerBalance());
+        assertEquals(30, testPlayer.getBalance());
 
         testPlayer.doubleBet();
-        assertEquals(30, testPlayer.getPlayerBalance());
+        assertEquals(30, testPlayer.getBalance());
         assertEquals(70, testPlayer.getBet());
-        assertEquals(1, testPlayer.getPlayerHand().length());
+        assertEquals(1, testPlayer.getHand().length());
     }
 
     @Test
     void testPushTrue() {
         Dealer dealer = new Dealer();
-        dealer.getDealerHand().addCard("Ace", "Spades");
-        dealer.getDealerHand().addCard("Ten", "Hearts");
-        testPlayer.getPlayerHand().addCard("Ace", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
+        dealer.getHand().addCard("Ace", "Spades");
+        dealer.getHand().addCard("Ten", "Hearts");
+        testPlayer.getHand().addCard("Ace", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
         testPlayer.placeBet(40);
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
 
         assertTrue(testPlayer.push(dealer));
-        assertEquals(100, testPlayer.getPlayerBalance());
+        assertEquals(100, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
     }
 
     @Test
     void testPushFalse() {
         Dealer dealer = new Dealer();
-        dealer.getDealerHand().addCard("Ace", "Spades");
-        dealer.getDealerHand().addCard("Ten", "Hearts");
-        testPlayer.getPlayerHand().addCard("Five", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
+        dealer.getHand().addCard("Ace", "Spades");
+        dealer.getHand().addCard("Ten", "Hearts");
+        testPlayer.getHand().addCard("Five", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
         testPlayer.placeBet(40);
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
 
         assertFalse(testPlayer.push(dealer));
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
     }
 
     @Test
     void testStandTrue() {
         Dealer dealer = new Dealer();
-        dealer.getDealerHand().addCard("Ace", "Spades");
-        dealer.getDealerHand().addCard("Ace", "Hearts");
-        testPlayer.getPlayerHand().addCard("Five", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
+        dealer.getHand().addCard("Ace", "Spades");
+        dealer.getHand().addCard("Ace", "Hearts");
+        testPlayer.getHand().addCard("Five", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
         testPlayer.placeBet(40);
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
 
         assertTrue(testPlayer.stand(dealer));
-        assertEquals(140, testPlayer.getPlayerBalance());
+        assertEquals(140, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
 
     }
@@ -126,79 +126,79 @@ public class PlayerTest {
     @Test
     void testStandFalse() {
         Dealer dealer = new Dealer();
-        dealer.getDealerHand().addCard("Ace", "Spades");
-        dealer.getDealerHand().addCard("Ten", "Hearts");
-        testPlayer.getPlayerHand().addCard("Five", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
+        dealer.getHand().addCard("Ace", "Spades");
+        dealer.getHand().addCard("Ten", "Hearts");
+        testPlayer.getHand().addCard("Five", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
         testPlayer.placeBet(40);
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
 
         testPlayer.stand(dealer);
         assertFalse(testPlayer.stand(dealer));
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
 
     }
 
     @Test
     void testWin() {
-        testPlayer.getPlayerHand().addCard("Five", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
+        testPlayer.getHand().addCard("Five", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
         testPlayer.placeBet(40);
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
-        assertEquals(2, testPlayer.getPlayerHand().length());
+        assertEquals(2, testPlayer.getHand().length());
 
         testPlayer.win();
-        assertEquals(140, testPlayer.getPlayerBalance());
+        assertEquals(140, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
-        assertEquals(0, testPlayer.getPlayerHand().length());
+        assertEquals(0, testPlayer.getHand().length());
     }
 
     @Test
     void testBustTrue() {
-        testPlayer.getPlayerHand().addCard("King", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
-        testPlayer.getPlayerHand().addCard("Five", "Spades");
+        testPlayer.getHand().addCard("King", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
+        testPlayer.getHand().addCard("Five", "Spades");
         testPlayer.placeBet(40);
 
         assertTrue(testPlayer.bust());
         assertEquals(0, testPlayer.getBet());
-        assertEquals(0, testPlayer.getPlayerHand().length());
+        assertEquals(0, testPlayer.getHand().length());
     }
 
     @Test
     void testBustFalse() {
-        testPlayer.getPlayerHand().addCard("King", "Spades");
-        testPlayer.getPlayerHand().addCard("Ten", "Diamonds");
-        testPlayer.getPlayerHand().addCard("Ace", "Spades");
+        testPlayer.getHand().addCard("King", "Spades");
+        testPlayer.getHand().addCard("Ten", "Diamonds");
+        testPlayer.getHand().addCard("Ace", "Spades");
         testPlayer.placeBet(40);
 
         assertFalse(testPlayer.bust());
         assertEquals(40, testPlayer.getBet());
-        assertEquals(3, testPlayer.getPlayerHand().length());
+        assertEquals(3, testPlayer.getHand().length());
     }
 
     @Test
     void testBlackjackTrue() {
-        testPlayer.getPlayerHand().addCard("King", "Spades");
-        testPlayer.getPlayerHand().addCard("Ace", "Spades");
+        testPlayer.getHand().addCard("King", "Spades");
+        testPlayer.getHand().addCard("Ace", "Spades");
         testPlayer.placeBet(40);
 
         assertTrue(testPlayer.blackjack());
-        assertEquals(160, testPlayer.getPlayerBalance());
+        assertEquals(160, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
     }
 
     @Test
     void testBlackjackFalse() {
-        testPlayer.getPlayerHand().addCard("King", "Spades");
-        testPlayer.getPlayerHand().addCard("One", "Spades");
+        testPlayer.getHand().addCard("King", "Spades");
+        testPlayer.getHand().addCard("One", "Spades");
         testPlayer.placeBet(40);
 
         assertFalse(testPlayer.blackjack());
-        assertEquals(60, testPlayer.getPlayerBalance());
+        assertEquals(60, testPlayer.getBalance());
         assertEquals(40, testPlayer.getBet());
     }
 }

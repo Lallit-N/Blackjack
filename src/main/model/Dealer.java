@@ -11,7 +11,7 @@ public class Dealer {
     }
 
 
-    public Deck getDealerHand() {
+    public Deck getHand() {
         return dealerHand;
     }
 

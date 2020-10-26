@@ -28,7 +28,7 @@ public class JsonReaderTest {
         JsonReader reader = new JsonReader("./data/testReaderPlayer.json");
         try {
             Player player = reader.read();
-            assertEquals(54321, player.getPlayerBalance());
+            assertEquals(54321, player.getBalance());
         } catch (IOException e) {
             fail("Couldn't read from file");
         }
