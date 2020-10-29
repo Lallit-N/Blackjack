@@ -156,6 +156,7 @@ public class Player implements Writable {
         }
     }
 
+    // EFFECTS: stores player balance as a JSON object
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

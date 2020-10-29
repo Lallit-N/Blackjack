@@ -163,7 +163,7 @@ public class Blackjack {
     private void loadPlayer() {
         try {
             player = jsonReader.read();
-            System.out.println("\nLoaded Player from " + JSON_STORE);
+            System.out.println("\nLoaded Player");
         } catch (IOException e) {
             System.out.println("\nUnable to read from file: " + JSON_STORE);
         }
@@ -382,7 +382,7 @@ public class Blackjack {
             jsonWriter.open();
             jsonWriter.write(player);
             jsonWriter.close();
-            System.out.println("\nSaved Player to " + JSON_STORE);
+            System.out.println("\nSaved Player");
             keepRunning = false;
         } catch (FileNotFoundException e) {
             System.out.println("\nUnable to write to file: " + JSON_STORE);
