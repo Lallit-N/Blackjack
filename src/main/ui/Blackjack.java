@@ -7,6 +7,7 @@ import persistence.JsonWriter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 // modelled after ca.ubc.cpsc210.bank.ui.TellerApp from https://github.students.cs.ubc.ca/CPSC210/TellerApp
@@ -19,6 +20,7 @@ public class Blackjack {
     private Dealer dealer;
     private Scanner input;
     boolean keepRunning = true;
+    int betAmount;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
@@ -169,20 +171,18 @@ public class Blackjack {
         }
     }
 
-    // REQUIRES: input must be an integer value only (no letters or special characters)
     // MODIFIES: this
     // EFFECTS: user places a bet and draws two cards
     private void placeBet() {
         dealer = new Dealer();
         boolean notDone = true;
-        int command;
 
         System.out.println("\nYour Balance: $" + player.getBalance());
         System.out.println("How much would you like to bet?");
-        command = input.nextInt();
+        int command = enterBet();
 
         while (notDone) {
-            if (command <= player.getBalance()) {
+            if (command <= player.getBalance() && command > 0) {
                 player.placeBet(command);
                 player.drawCards();
                 dealer.drawCards();
@@ -193,6 +193,19 @@ public class Blackjack {
             }
         }
         printHands();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: takes user input of bet amount;
+    //          catches NumberFormatException if user input is not an integer or too large
+    private int enterBet() {
+        try {
+            betAmount = Integer.parseInt(input.next());
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid numerical amount...");
+            enterBet();
+        }
+        return betAmount;
     }
 
     // EFFECTS: print the player and dealer hands (dealer has hidden card)
