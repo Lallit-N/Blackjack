@@ -61,7 +61,6 @@ public class Player implements Writable {
     // EFFECTS: adds another card to playerHand
     public void hit() {
         playerHand.drawCard();
-
     }
 
 

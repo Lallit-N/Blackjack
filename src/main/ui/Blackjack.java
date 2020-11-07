@@ -7,7 +7,6 @@ import persistence.JsonWriter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 // modelled after ca.ubc.cpsc210.bank.ui.TellerApp from https://github.students.cs.ubc.ca/CPSC210/TellerApp
@@ -19,12 +18,13 @@ public class Blackjack {
     private Player player;
     private Dealer dealer;
     private Scanner input;
-    boolean keepRunning = true;
-    int betAmount;
+    private boolean keepRunning = true;
+    private int betAmount;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
-    // EFFECTS: runs the Blackjack game
+    // MODIFIES: this
+    // EFFECTS: initializes the JSON reader and writer, then runs the Blackjack game
     public Blackjack() {
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
@@ -188,8 +188,8 @@ public class Blackjack {
                 dealer.drawCards();
                 notDone = false;
             } else {
-                System.out.println("Please enter a valid amount...");
-                command = input.nextInt();
+                System.out.println("Please enter an amount less than your balance...");
+                command = enterBet();
             }
         }
         printHands();
@@ -315,7 +315,8 @@ public class Blackjack {
     }
 
     // MODIFIES: this
-    // EFFECTS: compares player and dealer hands to determine the overall outcome of the round
+    // EFFECTS: dealer hits if needed, then compare player and dealer hands to determine the overall
+    //          outcome of the round
     private void doStand() {
         doDealerHit();
 
@@ -389,6 +390,7 @@ public class Blackjack {
         System.out.println("\tc -> cash out");
     }
 
+    // MODIFIES: this
     // EFFECTS: saves player to file and sets keepRunning to false
     private void savePlayer() {
         try {

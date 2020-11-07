@@ -1,5 +1,6 @@
 package model;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -8,7 +9,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DeckTest {
-    private Deck testDeck = new Deck();
+    private Deck testDeck;
+
+    @BeforeEach
+    void runBefore() {
+        testDeck = new Deck();
+    }
 
     @Test
     void testPlayingDeck() {
@@ -89,8 +95,9 @@ public class DeckTest {
 
         testDeck.addCard("Five", "Spades");
         testDeck.addCard("Jack", "Hearts");
-        testDeck.addCard("King", "Clubs");
+        assertFalse(testDeck.isBust());
 
+        testDeck.addCard("King", "Clubs");
         assertTrue(testDeck.isBust());
     }
 

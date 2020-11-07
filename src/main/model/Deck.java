@@ -23,7 +23,7 @@ public class Deck {
 
     // REQUIRES: method can only be called on an empty deck designated to be a playing deck
     // MODIFIES: this
-    // EFFECTS: create a full deck of 52 cards, and reload it if it gets empty
+    // EFFECTS: create a full deck of 52 cards
     public void playingDeck() {
         for (String s : SUITS) {
             for (String fn : FACE_NAMES) {
@@ -96,7 +96,7 @@ public class Deck {
     // MODIFIES: this
     // EFFECTS: return the sum of all the card values following the Blackjack rule for Aces
     public int getDeckValue() {
-        deckValue = 0;  //MVP line
+        deckValue = 0;
         for (Card c : cards) {
             deckValue += c.getCardValue();
         }
