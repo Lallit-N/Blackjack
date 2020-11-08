@@ -67,6 +67,12 @@ public class Deck {
     }
 
 
+    // EFFECTS: return a list of the cards in the deck
+    public List<Card> getCards() {
+        return cards;
+    }
+
+
     // EFFECTS: returns the length of the deck
     public int length() {
         return cards.size();

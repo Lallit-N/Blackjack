@@ -1,5 +1,6 @@
 package ui;
 
+import model.Card;
 import model.Dealer;
 import model.Player;
 import persistence.JsonReader;
@@ -21,26 +22,21 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private static final Font TEXT_FONT = new Font("Arial", Font.PLAIN, 42);
     private static final Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 26);
     private static final Font CASH_OUT_BUTTON_FONT = new Font("Arial", Font.PLAIN, 30);
-    private static final FlowLayout CARDS_LAYOUT = new FlowLayout();
+    private static final FlowLayout CARDS_LAYOUT = new FlowLayout(FlowLayout.LEFT, 5, 2);
     private static final FlowLayout BUTTONS_LAYOUT = new FlowLayout();
     private static final Dimension BUTTON_DIMENSION = new Dimension(140, 36);
     private static final String JSON_STORE = "./data/player.json";
     private static final int INITIAL_BALANCE = 25000;
     private Player player;
     private Dealer dealer;
+    private int betAmount;
+    private boolean standPlayer = false;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
     private JPanel panel;
     private JPanel buttons;
     private JPanel betPanel;
-    private JPanel playerCards;
-    private JPanel dealerCards;
-    private JButton hitBut;
-    private JButton standBut;
-    private JButton doubleBut;
-    private JButton cashOutBut;
-    private JButton betBut;
-    private JButton allInBut;
+    private JTextField betText;
 
 
     // MODIFIES: this
@@ -86,28 +82,25 @@ public class BlackjackGUI extends JFrame implements ActionListener {
                         + "\nSelect No to start a new game with $" + INITIAL_BALANCE, "Welcome to Blackjack!",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.YES_OPTION) {
-            //loadPlayer();
-            System.out.println("yes");
+            loadPlayer();
         } else if (result == JOptionPane.NO_OPTION) {
-            //player = new Player(INITIAL_BALANCE);
-            System.out.println("no");
+            player = new Player(INITIAL_BALANCE);
         } else {
             selectPlayer();
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: confirms with user if they would like to cash out;
+    //          if yes, then save player and close app; otherwise, do nothing
     private void exitMessage() {
         int result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you would like to cash out with $" + player.getBalance() + "?",
                 "Cash Out?",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.YES_OPTION) {
-            //savePlayer();
-            System.out.println("yes");
+            savePlayer();
             System.exit(0);
-        } else if (result == JOptionPane.NO_OPTION) {
-            //do nothing
-            System.out.println("no");
         }
     }
 
@@ -116,10 +109,22 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void loadPlayer() {
         try {
             player = jsonReader.read();
+            checkBalance();
         } catch (IOException e) {
             JOptionPane.showConfirmDialog(this,
                     "Could not load Player from file: " + JSON_STORE + "\nPlease restart the app.",
                     "ERROR!!!", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if saved player has no money, start a new game
+    private void checkBalance() {
+        if (player.getBalance() == 0) {
+            JOptionPane.showConfirmDialog(this,
+                    "Your saved Player has no money\nStarting new game...", "Saved Player is Broke",
+                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            player = new Player(INITIAL_BALANCE);
         }
     }
 
@@ -176,15 +181,21 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         yourValue.setForeground(TEXT_COLOUR);
         yourValue.setBounds(900, 310, 300, 60);
 
+        updateBalance();
+
+        panel.add(yourHand);
+        panel.add(yourValue);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: updates player balance on the panel
+    private void updateBalance() {
         JLabel yourBalance = new JLabel("Balance: $" + player.getBalance());
         yourBalance.setFont(TEXT_FONT);
         yourBalance.setForeground(TEXT_COLOUR);
         yourBalance.setBounds(225, 700, 750, 60);
         yourBalance.setHorizontalAlignment(JLabel.CENTER);
-
         panel.add(yourBalance);
-        panel.add(yourHand);
-        panel.add(yourValue);
     }
 
     // MODIFIES: this
@@ -195,46 +206,53 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         dealerHand.setForeground(TEXT_COLOUR);
         dealerHand.setBounds(100, 30, 400, 60);
 
-        JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getDeckValue());
-        dealerValue.setFont(TEXT_FONT);
-        dealerValue.setForeground(TEXT_COLOUR);
-        dealerValue.setBounds(900, 30, 300, 60);
+        if (standPlayer) {
+            JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getDeckValue());
+            dealerValue.setFont(TEXT_FONT);
+            dealerValue.setForeground(TEXT_COLOUR);
+            dealerValue.setBounds(900, 30, 300, 60);
+            panel.add(dealerValue);
+        }
 
         panel.add(dealerHand);
-        panel.add(dealerValue);
     }
 
     // MODIFIES: this
     // EFFECTS: initializes the playerCards panel and adds it to the main panel
     private void initPlayerCards() {
-        playerCards = new JPanel();
+        JPanel playerCards = new JPanel();
         playerCards.setLayout(CARDS_LAYOUT);
-        playerCards.setBounds(100, 360, 1000, 200);
-        playerCards.setBackground(BUTTON_COLOUR);
+        playerCards.setBounds(100, 360, 1000, 204);
+        playerCards.setBackground(BACKGROUND_COLOUR);
 
-        ImageIcon image = new ImageIcon("./data/cards/cardBacksmall.png");
-        JLabel picture = new JLabel(image);
-        JLabel picture2 = new JLabel(image);
+        for (Card c : player.getHand().getCards()) {
+            playerCards.add(new JLabel(new ImageIcon("./data/cards/"
+                    + c.getFaceName() + c.getSuit().charAt(0) + ".png")));
+        }
 
-        playerCards.add(picture);
-        playerCards.add(picture2);
         panel.add(playerCards);
     }
 
     // MODIFIES: this
     // EFFECTS: initializes the dealerCards panel and adds it to the main panel
     private void initDealerCards() {
-        dealerCards = new JPanel();
+        JPanel dealerCards = new JPanel();
         dealerCards.setLayout(CARDS_LAYOUT);
-        dealerCards.setBounds(100, 80, 1000, 200);
-        dealerCards.setBackground(BUTTON_COLOUR);
+        dealerCards.setBounds(100, 80, 1000, 204);
+        dealerCards.setBackground(BACKGROUND_COLOUR);
 
-        ImageIcon image = new ImageIcon("./data/cards/cardBacksmall.png");
-        JLabel picture = new JLabel(image);
-        JLabel picture2 = new JLabel(image);
+        if (standPlayer) {
+            for (Card c : dealer.getHand().getCards()) {
+                dealerCards.add(new JLabel(new ImageIcon("./data/cards/"
+                        + c.getFaceName() + c.getSuit().charAt(0) + ".png")));
+            }
+        } else if (dealer.getHand().length() == 2) {
+            Card card = dealer.getHand().getCard(0);
+            dealerCards.add(new JLabel(new ImageIcon("./data/cards/"
+                    + card.getFaceName() + card.getSuit().charAt(0) + ".png")));
+            dealerCards.add(new JLabel(new ImageIcon("./data/cards/cardBack.png")));
+        }
 
-        dealerCards.add(picture);
-        dealerCards.add(picture2);
         panel.add(dealerCards);
     }
 
@@ -258,7 +276,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void initBet() {
         betPanel = new JPanel();
         betPanel.setLayout(BUTTONS_LAYOUT);
-        betPanel.setBounds(300, 650, 600, 50);
+        betPanel.setBounds(325, 650, 550, 50);
         betPanel.setBackground(BACKGROUND_COLOUR);
 
         initBetText();
@@ -271,7 +289,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes betText, then adds it to betPanel
     private void initBetText() {
-        JTextField betText = new JTextField("Enter your bet here...");
+        betText = new JTextField("Enter your bet here...");
         betText.setColumns(11);
         betText.setFont(BUTTON_FONT);
         betText.setForeground(TEXT_COLOUR);
@@ -281,7 +299,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes the bet button, then adds it to betPanel
     private void betButton() {
-        betBut = new JButton("BET");
+        JButton betBut = new JButton("BET");
         betBut.setBackground(BUTTON_COLOUR);
         betBut.setForeground(TEXT_COLOUR);
         betBut.setFont(BUTTON_FONT);
@@ -294,7 +312,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes allInText, then adds it to betPanel
     private void allInButton() {
-        allInBut = new JButton("ALL IN");
+        JButton allInBut = new JButton("ALL IN");
         allInBut.setBackground(BUTTON_COLOUR);
         allInBut.setForeground(TEXT_COLOUR);
         allInBut.setFont(BUTTON_FONT);
@@ -307,7 +325,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes the hit button and adds it to the buttons panel
     private void hitButton() {
-        hitBut = new JButton("HIT");
+        JButton hitBut = new JButton("HIT");
         hitBut.setBackground(BUTTON_COLOUR);
         hitBut.setForeground(TEXT_COLOUR);
         hitBut.setFont(BUTTON_FONT);
@@ -320,7 +338,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes the stand button and adds it to the buttons panel
     private void standButton() {
-        standBut = new JButton("STAND");
+        JButton standBut = new JButton("STAND");
         standBut.setBackground(BUTTON_COLOUR);
         standBut.setForeground(TEXT_COLOUR);
         standBut.setFont(BUTTON_FONT);
@@ -333,7 +351,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes the double button and adds it to the buttons panel
     private void doubleButton() {
-        doubleBut = new JButton("DOUBLE");
+        JButton doubleBut = new JButton("DOUBLE");
         doubleBut.setBackground(BUTTON_COLOUR);
         doubleBut.setForeground(TEXT_COLOUR);
         doubleBut.setFont(BUTTON_FONT);
@@ -346,10 +364,10 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes the Cash Out button and adds it to the main panel
     private void cashOutButton() {
-        Color cashOut = new Color(109, 255, 71);
+        Color cashGreen = new Color(109, 255, 71);
 
-        cashOutBut = new JButton("CA$H OUT");
-        cashOutBut.setBackground(cashOut);
+        JButton cashOutBut = new JButton("CA$H OUT");
+        cashOutBut.setBackground(cashGreen);
         cashOutBut.setForeground(TEXT_COLOUR);
         cashOutBut.setFont(CASH_OUT_BUTTON_FONT);
         cashOutBut.setActionCommand("leave");
@@ -357,17 +375,6 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         cashOutBut.setBounds(990, 715, 200, 50);
         panel.add(cashOutBut);
     }
-
-//    private void displayCards() {
-//        Deck deck = new Deck();
-//        deck.playingDeck();
-//
-//        for (String suit : deck.getSuits()) {
-//            for (String fn : deck.getFaceNames()) {
-//                panel.add(new JLabel(new ImageIcon("./data/cards/" + fn + suit.charAt(0) + ".png")));
-//            }
-//        }
-//    }
 
     // MODIFIES: this
     // EFFECTS: performs the action corresponding to the specific action command
@@ -382,31 +389,152 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("leave")) {
             exitMessage();
         } else if (e.getActionCommand().equals("bet")) {
-            //placeBet();
+            if (player.getBet() == 0) {
+                doBet();
+            }
         } else if (e.getActionCommand().equals("betAll")) {
-            //placeBet();
+            if (player.getBet() == 0) {
+                doAllIn();
+            }
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: places bet based off of bet TextField entry and catches NumberFormatException;
+    //          if player has blackjack, then update game accordingly
+    private void doBet() {
+        dealer = new Dealer();
+
+        try {
+            betAmount = Integer.parseInt(betText.getText());
+            if (betAmount <= player.getBalance() && betAmount > 0) {
+                player.placeBet(betAmount);
+                player.drawCards();
+                dealer.drawCards();
+                initPanel();
+                checkBlackjack();
+            } else {
+                betTooLargePopUp();
+            }
+        } catch (NumberFormatException e) {
+            invalidBetPopUp();
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if player's hand value is 21 after placing bet and drawing two cards,
+    //          then display blackjack pop up
+    private void checkBlackjack() {
+        if (player.blackjack()) {
+            result("BLACKJACK!!!", "BLACKJACK");
+        }
+    }
+
+    // EFFECTS: display this pop up when bet input is larger than player balance
+    private void betTooLargePopUp() {
+        JOptionPane.showConfirmDialog(this,
+                "Please enter an amount less than your balance", "ERROR",
+                JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+    }
+
+    // EFFECTS: display this pop up when NumberFormatException is caught
+    private void invalidBetPopUp() {
+        JOptionPane.showConfirmDialog(this,
+                "Please enter a valid numerical amount", "ERROR",
+                JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: place bet equal to player balance
+    private void doAllIn() {
+        dealer = new Dealer();
+
+        player.placeBet(player.getBalance());
+        player.drawCards();
+        dealer.drawCards();
+        initPanel();
+        checkBlackjack();
     }
 
     // MODIFIES: this
     // EFFECTS: draw a card to the Player's hand;
     //          if the Player busts, display bust message and ask to play again
     private void doHit() {
-        System.out.println("hit");
+        player.hit();
+        initPanel();
+
+        playerBust();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if player busted, display pop up message and update balance on panel
+    private void playerBust() {
+        if (player.bust()) {
+            result("YOU BUSTED :(", "BUST");
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: dealer hits if needed, then compare player and dealer hands to determine the overall
     //          outcome of the round
     private void doStand() {
-        System.out.println("stand");
+        standPlayer = true;
+        if (dealer.getHand().getDeckValue() < 17) {
+            dealer.hit();
+        }
+
+        initPanel();
+
+        if (dealer.bust()) {
+            player.win();
+            result("DEALER BUSTED\nYOU WIN!", "DEALER BUSTED");
+        } else if (player.push(dealer)) {
+            result("IT'S A PUSH", "PUSH");
+        } else if (player.stand(dealer)) {
+            result("YOU WIN!", "WIN");
+        } else {
+            result("DEALER WINS!\nYOU LOSE...", "DEALER WON");
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: display a pop up message with the result of the round
+    private void result(String message, String title) {
+        dealer = new Dealer();
+
+        JOptionPane.showConfirmDialog(this,
+                message, title,
+                JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        initPanel();
+        standPlayer = false;
+        playAgain();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if player balance is 0, then ask if player would like to start a new game
+    private void playAgain() {
+        if (player.getBalance() == 0) {
+            int result = JOptionPane.showConfirmDialog(this,
+                    "You are officially BROKE!\nWould you like to start a new game with $"
+                            + INITIAL_BALANCE + "?",
+                    "Cash Out?",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                player = new Player(INITIAL_BALANCE);
+                initPanel();
+            } else if (result == JOptionPane.NO_OPTION) {
+                savePlayer();
+                System.exit(0);
+            }
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: double player bet and draw a card to the Player's hand;
     //          if the Player busts, display bust message and ask to play again
     private void doDouble() {
-        System.out.println("double");
+        player.doubleBet();
+        playerBust();
     }
 
 }

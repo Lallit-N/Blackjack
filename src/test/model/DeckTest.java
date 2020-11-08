@@ -55,6 +55,12 @@ public class DeckTest {
     }
 
     @Test
+    void testGetCards() {
+        testDeck.playingDeck();
+        assertEquals(52, testDeck.getCards().size());
+    }
+
+    @Test
     void testGetFaceNames() {
         testDeck.addCard("Ace", "Spades");
         testDeck.addCard("Two", "Hearts");
