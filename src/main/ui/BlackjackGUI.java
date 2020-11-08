@@ -535,6 +535,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void doDouble() {
         player.doubleBet();
         playerBust();
+        initPanel();
     }
 
 }
