@@ -35,10 +35,10 @@ public class Player implements Writable {
 
 
     // MODIFIES: this
-    // EFFECTS: if b <= playerBalance add the amount b to the Player's bet and subtract b from
-    //          playerBalance; also, draw 2 cards
+    // EFFECTS: if  0 < b <= playerBalance add the amount b to the Player's bet and subtract b from
+    //          playerBalance
     public void placeBet(int b) {
-        if (b <= playerBalance) {
+        if (0 < b && b <= playerBalance) {
             playerBalance -= b;
             bet = b;
         }
