@@ -12,6 +12,8 @@ import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+// images for GUI playing cards were sourced from http://acbl.mybigcommerce.com/52-playing-cards/
+
 // Blackjack game GUI
 public class BlackjackGUI extends JFrame implements ActionListener {
     private static final int WIDTH = 1200;
@@ -59,7 +61,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                exitMessage();
+                exitPopUp();
             }
         });
 
@@ -93,7 +95,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: confirms with user if they would like to cash out;
     //          if yes, then save player and close app; otherwise, do nothing
-    private void exitMessage() {
+    private void exitPopUp() {
         int result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you would like to cash out with $" + player.getBalance() + "?",
                 "Cash Out?",
@@ -111,9 +113,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
             player = jsonReader.read();
             checkBalance();
         } catch (IOException e) {
-            JOptionPane.showConfirmDialog(this,
-                    "Could not load Player from file: " + JSON_STORE + "\nPlease restart the app.",
-                    "ERROR!!!", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE);
+            errorPopUp("Could not load Player from file: " + JSON_STORE + "\nPlease restart the app.");
         }
     }
 
@@ -123,7 +123,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         if (player.getBalance() == 0) {
             JOptionPane.showConfirmDialog(this,
                     "Your saved Player has no money\nStarting new game...", "Saved Player is Broke",
-                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
             player = new Player(INITIAL_BALANCE);
         }
     }
@@ -136,9 +136,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
             jsonWriter.write(player);
             jsonWriter.close();
         } catch (FileNotFoundException e) {
-            JOptionPane.showConfirmDialog(this,
-                    "Could not save Player to file: " + JSON_STORE, "ERROR!!!",
-                    JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE);
+            errorPopUp("Could not save Player to file: " + JSON_STORE);
         }
     }
 
@@ -164,13 +162,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: calls the methods that initialize all of the JLabels
     private void initLabels() {
-        playerLabels();
-        dealerLabels();
+        initPlayerLabels();
+        initDealerLabels();
     }
 
     // MODIFIES: this
     // EFFECTS: initializes all of the player JLabels
-    private void playerLabels() {
+    private void initPlayerLabels() {
         JLabel yourHand = new JLabel("Your Hand");
         yourHand.setFont(TEXT_FONT);
         yourHand.setForeground(TEXT_COLOUR);
@@ -181,26 +179,20 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         yourValue.setForeground(TEXT_COLOUR);
         yourValue.setBounds(900, 310, 300, 60);
 
-        updateBalance();
-
-        panel.add(yourHand);
-        panel.add(yourValue);
-    }
-
-    // MODIFIES: this
-    // EFFECTS: updates player balance on the panel
-    private void updateBalance() {
         JLabel yourBalance = new JLabel("Balance: $" + player.getBalance());
         yourBalance.setFont(TEXT_FONT);
         yourBalance.setForeground(TEXT_COLOUR);
         yourBalance.setBounds(225, 700, 750, 60);
         yourBalance.setHorizontalAlignment(JLabel.CENTER);
+
         panel.add(yourBalance);
+        panel.add(yourHand);
+        panel.add(yourValue);
     }
 
     // MODIFIES: this
     // EFFECTS: initializes all of the player JLabels
-    private void dealerLabels() {
+    private void initDealerLabels() {
         JLabel dealerHand = new JLabel("Dealer Hand");
         dealerHand.setFont(TEXT_FONT);
         dealerHand.setForeground(TEXT_COLOUR);
@@ -310,7 +302,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     }
 
     // MODIFIES: this
-    // EFFECTS: initializes allInText, then adds it to betPanel
+    // EFFECTS: initializes all in button, then adds it to betPanel
     private void allInButton() {
         JButton allInBut = new JButton("ALL IN");
         allInBut.setBackground(BUTTON_COLOUR);
@@ -387,38 +379,46 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("stand")) {
             doStand();
         } else if (e.getActionCommand().equals("leave")) {
-            exitMessage();
+            exitPopUp();
         } else if (e.getActionCommand().equals("bet")) {
-            if (player.getBet() == 0) {
-                doBet();
-            }
+            doBet();
         } else if (e.getActionCommand().equals("betAll")) {
-            if (player.getBet() == 0) {
-                doAllIn();
-            }
+            doAllIn();
         }
     }
 
     // MODIFIES: this
     // EFFECTS: places bet based off of bet TextField entry and catches NumberFormatException;
-    //          if player has blackjack, then update game accordingly
+    //          if 0 < betAmount <= Player balance, place bet with betAmount;
+    //          otherwise, display an error pop up accordingly
     private void doBet() {
-        dealer = new Dealer();
-
-        try {
-            betAmount = Integer.parseInt(betText.getText());
-            if (betAmount <= player.getBalance() && betAmount > 0) {
-                player.placeBet(betAmount);
-                player.drawCards();
-                dealer.drawCards();
-                initPanel();
-                checkBlackjack();
-            } else {
-                betTooLargePopUp();
+        if (player.getBet() == 0) {
+            try {
+                betAmount = Integer.parseInt(betText.getText());
+                if (betAmount <= player.getBalance() && betAmount > 0) {
+                    placeBet(betAmount);
+                } else if (betAmount > player.getBalance()) {
+                    errorPopUp("Please enter an amount less than your balance");
+                } else {
+                    errorPopUp("Please enter a valid numerical amount");
+                }
+            } catch (NumberFormatException e) {
+                errorPopUp("Please enter a valid numerical amount");
             }
-        } catch (NumberFormatException e) {
-            invalidBetPopUp();
+        } else {
+            errorPopUp("You cannot place a bet in the middle of the round");
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: places bet given the bet amount and updates the panel, then checks if player has blackjack
+    private void placeBet(int betAmount) {
+        dealer = new Dealer();
+        player.placeBet(betAmount);
+        player.drawCards();
+        dealer.drawCards();
+        initPanel();
+        checkBlackjack();
     }
 
     // MODIFIES: this
@@ -430,70 +430,68 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         }
     }
 
-    // EFFECTS: display this pop up when bet input is larger than player balance
-    private void betTooLargePopUp() {
-        JOptionPane.showConfirmDialog(this,
-                "Please enter an amount less than your balance", "ERROR",
-                JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
-    }
-
-    // EFFECTS: display this pop up when NumberFormatException is caught
-    private void invalidBetPopUp() {
-        JOptionPane.showConfirmDialog(this,
-                "Please enter a valid numerical amount", "ERROR",
-                JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+    // EFFECTS: display error pop up with given message string
+    private void errorPopUp(String message) {
+        JOptionPane.showConfirmDialog(this, message, "ERROR", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.ERROR_MESSAGE);
     }
 
     // MODIFIES: this
     // EFFECTS: place bet equal to player balance
     private void doAllIn() {
-        dealer = new Dealer();
-
-        player.placeBet(player.getBalance());
-        player.drawCards();
-        dealer.drawCards();
-        initPanel();
-        checkBlackjack();
+        if (player.getBet() == 0) {
+            placeBet(player.getBalance());
+        } else {
+            errorPopUp("You cannot place a bet in the middle of the round");
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: draw a card to the Player's hand;
     //          if the Player busts, display bust message and ask to play again
     private void doHit() {
-        player.hit();
-        initPanel();
+        if (player.getHand().length() >= 2) {
+            player.hit();
+            initPanel();
 
-        playerBust();
+            playerBust();
+        } else {
+            errorPopUp("You must place a bet before you can hit");
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: if player busted, display pop up message and update balance on panel
     private void playerBust() {
         if (player.bust()) {
-            result("YOU BUSTED :(", "BUST");
+            result("YOU BUSTED", "BUST");
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: dealer hits if needed, then compare player and dealer hands to determine the overall
-    //          outcome of the round
+    // EFFECTS: if round has started, dealer hits if needed, then compare player and dealer hands to determine
+    //          the overall outcome of the round;
+    //          otherwise, display error pop up telling player to place a bet first
     private void doStand() {
-        standPlayer = true;
-        if (dealer.getHand().getDeckValue() < 17) {
-            dealer.hit();
-        }
+        if (dealer.getHand().length() == 2) {
+            standPlayer = true;
+            if (dealer.getHand().getDeckValue() < 17) {
+                dealer.hit();
+            }
+            initPanel();
 
-        initPanel();
-
-        if (dealer.bust()) {
-            player.win();
-            result("DEALER BUSTED\nYOU WIN!", "DEALER BUSTED");
-        } else if (player.push(dealer)) {
-            result("IT'S A PUSH", "PUSH");
-        } else if (player.stand(dealer)) {
-            result("YOU WIN!", "WIN");
+            if (dealer.bust()) {
+                player.win();
+                result("DEALER BUSTED\nYOU WIN!", "DEALER BUSTED");
+            } else if (player.push(dealer)) {
+                result("IT'S A PUSH", "PUSH");
+            } else if (player.stand(dealer)) {
+                result("YOU WIN!", "WIN");
+            } else {
+                result("DEALER WINS!\nYOU LOSE...", "DEALER WON");
+            }
         } else {
-            result("DEALER WINS!\nYOU LOSE...", "DEALER WON");
+            errorPopUp("You must place a bet before you can stand");
         }
     }
 
@@ -502,16 +500,15 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void result(String message, String title) {
         dealer = new Dealer();
 
-        JOptionPane.showConfirmDialog(this,
-                message, title,
-                JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showConfirmDialog(this, message, title, JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
         initPanel();
         standPlayer = false;
         playAgain();
     }
 
     // MODIFIES: this
-    // EFFECTS: if player balance is 0, then ask if player would like to start a new game
+    // EFFECTS: if player balance is 0, then ask if player would like to start a new game or leave
     private void playAgain() {
         if (player.getBalance() == 0) {
             int result = JOptionPane.showConfirmDialog(this,
@@ -531,12 +528,18 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
     // MODIFIES: this
     // EFFECTS: double player bet and draw a card to the Player's hand;
-    //          if the Player busts, display bust message and ask to play again
+    //          if the Player busts, display bust message and ask to play again;
+    //          if the Player cannot double and hit, then display pop up message telling them why
     private void doDouble() {
-        player.doubleBet();
-        playerBust();
-        initPanel();
+        if (player.getHand().length() == 2 && player.getBalance() >= player.getBet()) {
+            player.doubleBet();
+            initPanel();
+            playerBust();
+        } else if (player.getHand().length() != 2) {
+            errorPopUp("You can only Double when you have two cards in your hand");
+        } else {
+            errorPopUp("You must have at least $" + player.getBet() + " in order to Double");
+        }
     }
-
 }
 
