@@ -61,9 +61,9 @@ public class Deck {
     }
 
 
-    // EFFECTS: return the card at index randomInt from the deck
-    public Card getCard(int randomInt) {
-        return cards.get(randomInt);
+    // EFFECTS: return the card at index index from the deck
+    public Card getCard(int index) {
+        return cards.get(index);
     }
 
 

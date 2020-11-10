@@ -174,10 +174,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         yourHand.setForeground(TEXT_COLOUR);
         yourHand.setBounds(100, 310, 300, 60);
 
-        JLabel yourValue = new JLabel("Value: " + player.getHand().getDeckValue());
-        yourValue.setFont(TEXT_FONT);
-        yourValue.setForeground(TEXT_COLOUR);
-        yourValue.setBounds(900, 310, 300, 60);
+        if (player.getHand().length() > 0) {
+            JLabel yourValue = new JLabel("Value: " + player.getHand().getDeckValue());
+            yourValue.setFont(TEXT_FONT);
+            yourValue.setForeground(TEXT_COLOUR);
+            yourValue.setBounds(900, 310, 300, 60);
+            panel.add(yourValue);
+        }
 
         JLabel yourBalance = new JLabel("Balance: $" + player.getBalance());
         yourBalance.setFont(TEXT_FONT);
@@ -187,7 +190,6 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
         panel.add(yourBalance);
         panel.add(yourHand);
-        panel.add(yourValue);
     }
 
     // MODIFIES: this
@@ -204,8 +206,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
             dealerValue.setForeground(TEXT_COLOUR);
             dealerValue.setBounds(900, 30, 300, 60);
             panel.add(dealerValue);
+        } else if (dealer.getHand().length() == 2) {
+            JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getCard(0).getCardValue());
+            dealerValue.setFont(TEXT_FONT);
+            dealerValue.setForeground(TEXT_COLOUR);
+            dealerValue.setBounds(900, 30, 300, 60);
+            panel.add(dealerValue);
         }
-
         panel.add(dealerHand);
     }
 
@@ -277,6 +284,39 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
         panel.add(betPanel);
     }
+
+//    private void betQuarterButton() {
+//        JButton betQuarterBut = new JButton("BET 1/4");
+//        betQuarterBut.setBackground(BUTTON_COLOUR);
+//        betQuarterBut.setForeground(TEXT_COLOUR);
+//        betQuarterBut.setFont(BUTTON_FONT);
+//        betQuarterBut.setActionCommand("betQuarter");
+//        betQuarterBut.addActionListener(this);
+//        betQuarterBut.setPreferredSize(BUTTON_DIMENSION);
+//        betPanel.add(betQuarterBut);
+//    }
+
+//    private void betHalfButton() {
+//        JButton betHalfBut = new JButton("BET 1/2");
+//        betHalfBut.setBackground(BUTTON_COLOUR);
+//        betHalfBut.setForeground(TEXT_COLOUR);
+//        betHalfBut.setFont(BUTTON_FONT);
+//        betHalfBut.setActionCommand("betHalf");
+//        betHalfBut.addActionListener(this);
+//        betHalfBut.setPreferredSize(BUTTON_DIMENSION);
+//        betPanel.add(betHalfBut);
+//    }
+
+//    private void betThreeQuarterButton() {
+//        JButton betThreeQuarterBut = new JButton("BET 1/2");
+//        betThreeQuarterBut.setBackground(BUTTON_COLOUR);
+//        betThreeQuarterBut.setForeground(TEXT_COLOUR);
+//        betThreeQuarterBut.setFont(BUTTON_FONT);
+//        betThreeQuarterBut.setActionCommand("betHalf");
+//        betThreeQuarterBut.addActionListener(this);
+//        betThreeQuarterBut.setPreferredSize(BUTTON_DIMENSION);
+//        betPanel.add(betThreeQuarterBut);
+//    }
 
     // MODIFIES: this
     // EFFECTS: initializes betText, then adds it to betPanel
@@ -432,8 +472,8 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
     // EFFECTS: display error pop up with given message string
     private void errorPopUp(String message) {
-        JOptionPane.showConfirmDialog(this, message, "ERROR", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showConfirmDialog(this, message, "", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     // MODIFIES: this
@@ -499,11 +539,11 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // EFFECTS: display a pop up message with the result of the round
     private void result(String message, String title) {
         dealer = new Dealer();
+        standPlayer = false;
 
         JOptionPane.showConfirmDialog(this, message, title, JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
         initPanel();
-        standPlayer = false;
         playAgain();
     }
 
