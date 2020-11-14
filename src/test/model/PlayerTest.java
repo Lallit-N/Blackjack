@@ -21,8 +21,15 @@ public class PlayerTest {
     }
 
     @Test
-    void testPlaceBetInvalid() {
+    void testPlaceBetTooLarge() {
         testPlayer.placeBet(125);
+        assertEquals(100, testPlayer.getBalance());
+        assertEquals(0, testPlayer.getBet());
+    }
+
+    @Test
+    void testPlaceBetZero() {
+        testPlayer.placeBet(0);
         assertEquals(100, testPlayer.getBalance());
         assertEquals(0, testPlayer.getBet());
     }
