@@ -21,7 +21,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private static final Color TEXT_COLOUR = new Color(0, 0, 0);
     private static final Color BACKGROUND_COLOUR = new Color(29, 101, 31);
     private static final Color BUTTON_COLOUR = new Color(246, 198, 115, 255);
-    private static final Font TEXT_FONT = new Font("Arial", Font.PLAIN, 42);
+    private static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 42);
     private static final Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 26);
     private static final Font CASH_OUT_BUTTON_FONT = new Font("Arial", Font.PLAIN, 30);
     private static final FlowLayout CARDS_LAYOUT = new FlowLayout(FlowLayout.LEFT, 5, 2);
@@ -31,10 +31,9 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private static final int INITIAL_BALANCE = 25000;
     private Player player;
     private Dealer dealer;
-    private int betAmount;
     private boolean standPlayer = false;
-    private JsonWriter jsonWriter;
-    private JsonReader jsonReader;
+    private final JsonWriter jsonWriter;
+    private final JsonReader jsonReader;
     private JPanel panel;
     private JPanel buttons;
     private JPanel betPanel;
@@ -42,12 +41,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
 
     // MODIFIES: this
-    // EFFECTS: initializes the JSON reader and writer and the dealer, then runs the Blackjack game
+    // EFFECTS: initializes the JSON reader, JSON writer, Dealer, and a temporary Player then runs the Blackjack game
     public BlackjackGUI() {
         super("BLACKJACK");
         jsonReader = new JsonReader(JSON_STORE);
         jsonWriter = new JsonWriter(JSON_STORE);
         dealer = new Dealer();
+        player = new Player(0); //placeholder for panel to initialize at the start
         runBlackJack();
     }
 
@@ -64,11 +64,8 @@ public class BlackjackGUI extends JFrame implements ActionListener {
                 exitPopUp();
             }
         });
-
-        selectPlayer();
-
         initPanel();
-
+        selectPlayer();
     }
 
     // MODIFIES: this
@@ -90,6 +87,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         } else {
             selectPlayer();
         }
+        initPanel();
     }
 
     // MODIFIES: this
@@ -147,15 +145,11 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         panel.setBackground(BACKGROUND_COLOUR);
         this.setContentPane(panel);
         this.setLayout(null);
-
         initLabels();
-
         initButtons();
         initBet();
-
         initPlayerCards();
         initDealerCards();
-
         this.setVisible(true);
     }
 
@@ -170,20 +164,20 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // EFFECTS: initializes all of the player JLabels
     private void initPlayerLabels() {
         JLabel yourHand = new JLabel("Your Hand");
-        yourHand.setFont(TEXT_FONT);
+        yourHand.setFont(LABEL_FONT);
         yourHand.setForeground(TEXT_COLOUR);
         yourHand.setBounds(100, 310, 300, 60);
 
         if (player.getHand().length() > 0) {
             JLabel yourValue = new JLabel("Value: " + player.getHand().getDeckValue());
-            yourValue.setFont(TEXT_FONT);
+            yourValue.setFont(LABEL_FONT);
             yourValue.setForeground(TEXT_COLOUR);
             yourValue.setBounds(900, 310, 300, 60);
             panel.add(yourValue);
         }
 
         JLabel yourBalance = new JLabel("Balance: $" + player.getBalance());
-        yourBalance.setFont(TEXT_FONT);
+        yourBalance.setFont(LABEL_FONT);
         yourBalance.setForeground(TEXT_COLOUR);
         yourBalance.setBounds(225, 700, 750, 60);
         yourBalance.setHorizontalAlignment(JLabel.CENTER);
@@ -196,19 +190,19 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // EFFECTS: initializes all of the player JLabels
     private void initDealerLabels() {
         JLabel dealerHand = new JLabel("Dealer Hand");
-        dealerHand.setFont(TEXT_FONT);
+        dealerHand.setFont(LABEL_FONT);
         dealerHand.setForeground(TEXT_COLOUR);
         dealerHand.setBounds(100, 30, 400, 60);
 
         if (standPlayer) {
             JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getDeckValue());
-            dealerValue.setFont(TEXT_FONT);
+            dealerValue.setFont(LABEL_FONT);
             dealerValue.setForeground(TEXT_COLOUR);
             dealerValue.setBounds(900, 30, 300, 60);
             panel.add(dealerValue);
         } else if (dealer.getHand().length() == 2) {
             JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getCard(0).getCardValue());
-            dealerValue.setFont(TEXT_FONT);
+            dealerValue.setFont(LABEL_FONT);
             dealerValue.setForeground(TEXT_COLOUR);
             dealerValue.setBounds(900, 30, 300, 60);
             panel.add(dealerValue);
@@ -285,39 +279,6 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         panel.add(betPanel);
     }
 
-//    private void betQuarterButton() {
-//        JButton betQuarterBut = new JButton("BET 1/4");
-//        betQuarterBut.setBackground(BUTTON_COLOUR);
-//        betQuarterBut.setForeground(TEXT_COLOUR);
-//        betQuarterBut.setFont(BUTTON_FONT);
-//        betQuarterBut.setActionCommand("betQuarter");
-//        betQuarterBut.addActionListener(this);
-//        betQuarterBut.setPreferredSize(BUTTON_DIMENSION);
-//        betPanel.add(betQuarterBut);
-//    }
-
-//    private void betHalfButton() {
-//        JButton betHalfBut = new JButton("BET 1/2");
-//        betHalfBut.setBackground(BUTTON_COLOUR);
-//        betHalfBut.setForeground(TEXT_COLOUR);
-//        betHalfBut.setFont(BUTTON_FONT);
-//        betHalfBut.setActionCommand("betHalf");
-//        betHalfBut.addActionListener(this);
-//        betHalfBut.setPreferredSize(BUTTON_DIMENSION);
-//        betPanel.add(betHalfBut);
-//    }
-
-//    private void betThreeQuarterButton() {
-//        JButton betThreeQuarterBut = new JButton("BET 1/2");
-//        betThreeQuarterBut.setBackground(BUTTON_COLOUR);
-//        betThreeQuarterBut.setForeground(TEXT_COLOUR);
-//        betThreeQuarterBut.setFont(BUTTON_FONT);
-//        betThreeQuarterBut.setActionCommand("betHalf");
-//        betThreeQuarterBut.addActionListener(this);
-//        betThreeQuarterBut.setPreferredSize(BUTTON_DIMENSION);
-//        betPanel.add(betThreeQuarterBut);
-//    }
-
     // MODIFIES: this
     // EFFECTS: initializes betText, then adds it to betPanel
     private void initBetText() {
@@ -325,6 +286,19 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         betText.setColumns(11);
         betText.setFont(BUTTON_FONT);
         betText.setForeground(TEXT_COLOUR);
+        betText.setBackground(BUTTON_COLOUR);
+        betText.setHorizontalAlignment(JTextField.CENTER);
+        betText.setToolTipText("Enter your bet here...");
+        betText.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                betText.selectAll();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+            }
+        });
         betPanel.add(betText);
     }
 
@@ -338,6 +312,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         betBut.setActionCommand("bet");
         betBut.addActionListener(this);
         betBut.setPreferredSize(BUTTON_DIMENSION);
+        betBut.setToolTipText("Place your desired bet");
         betPanel.add(betBut);
     }
 
@@ -351,6 +326,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         allInBut.setActionCommand("betAll");
         allInBut.addActionListener(this);
         allInBut.setPreferredSize(BUTTON_DIMENSION);
+        allInBut.setToolTipText("Bet all of your money");
         betPanel.add(allInBut);
     }
 
@@ -364,6 +340,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         hitBut.setActionCommand("hit");
         hitBut.addActionListener(this);
         hitBut.setPreferredSize(BUTTON_DIMENSION);
+        hitBut.setToolTipText("Draw another card");
         buttons.add(hitBut);
     }
 
@@ -377,6 +354,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         standBut.setActionCommand("stand");
         standBut.addActionListener(this);
         standBut.setPreferredSize(BUTTON_DIMENSION);
+        standBut.setToolTipText("Face-off against the Dealer");
         buttons.add(standBut);
     }
 
@@ -390,6 +368,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         doubleBut.setActionCommand("double");
         doubleBut.addActionListener(this);
         doubleBut.setPreferredSize(BUTTON_DIMENSION);
+        doubleBut.setToolTipText("Double your bet and Hit");
         buttons.add(doubleBut);
     }
 
@@ -405,6 +384,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         cashOutBut.setActionCommand("leave");
         cashOutBut.addActionListener(this);
         cashOutBut.setBounds(990, 715, 200, 50);
+        cashOutBut.setToolTipText("Save your current balance and exit");
         panel.add(cashOutBut);
     }
 
@@ -434,7 +414,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void doBet() {
         if (player.getBet() == 0) {
             try {
-                betAmount = Integer.parseInt(betText.getText());
+                int betAmount = Integer.parseInt(betText.getText());
                 if (betAmount <= player.getBalance() && betAmount > 0) {
                     placeBet(betAmount);
                 } else if (betAmount > player.getBalance()) {
@@ -515,9 +495,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void doStand() {
         if (dealer.getHand().length() == 2) {
             standPlayer = true;
-            if (dealer.getHand().getDeckValue() < 17) {
-                dealer.hit();
-            }
+            dealer.stand(player);
             initPanel();
 
             if (dealer.bust()) {

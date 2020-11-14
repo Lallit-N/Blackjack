@@ -340,7 +340,7 @@ public class Blackjack {
     private void doDealerHit() {
         if (dealer.getHand().getDeckValue() < 17) {
             showHands();
-            dealer.hit();
+            dealer.stand(player);
             System.out.println("\n\nDealer hits...");
         } else {
             System.out.println("\nDealer does not hit...");

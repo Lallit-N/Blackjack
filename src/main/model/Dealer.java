@@ -28,8 +28,9 @@ public class Dealer {
     // REQUIRES: dealerHand must contain at least 2 cards
     // MODIFIES: this
     // EFFECTS: adds another card to dealerHand until deck value >= 17
-    public void hit() {
-        while (dealerHand.getDeckValue() < 17) {
+    public void stand(Player player) {
+        int playerHandValue = player.getHand().getDeckValue();
+        while (dealerHand.getDeckValue() < 17 && dealerHand.getDeckValue() <= playerHandValue) {
             dealerHand.drawCard();
         }
     }

@@ -21,20 +21,41 @@ public class DealerTest {
     }
 
     @Test
-    void testHit() {
+    void testStandHitEqualValues() {
+        Player player = new Player(100);
+        player.getHand().addCard("Seven", "Hearts");
+        player.getHand().addCard("Nine", "Hearts");
+
         testDealer.getHand().addCard("Seven", "Hearts");
         testDealer.getHand().addCard("Nine", "Hearts");
         assertEquals(2, testDealer.getHand().length());
-        testDealer.hit();
+        testDealer.stand(player);
         assertEquals(3, testDealer.getHand().length());
     }
 
     @Test
-    void testNoHit() {
+    void testStandHit() {
+        Player player = new Player(100);
+        player.getHand().addCard("Seven", "Hearts");
+        player.getHand().addCard("Seven", "Hearts");
+
+        testDealer.getHand().addCard("Seven", "Hearts");
+        testDealer.getHand().addCard("Eight", "Hearts");
+        assertEquals(2, testDealer.getHand().length());
+        testDealer.stand(player);
+        assertEquals(2, testDealer.getHand().length());
+    }
+
+    @Test
+    void testStandNoHit() {
+        Player player = new Player(100);
+        player.getHand().addCard("Ace", "Hearts");
+        player.getHand().addCard("Nine", "Hearts");
+
         testDealer.getHand().addCard("Ace", "Hearts");
         testDealer.getHand().addCard("Nine", "Hearts");
         assertEquals(2, testDealer.getHand().length());
-        testDealer.hit();
+        testDealer.stand(player);
         assertEquals(2, testDealer.getHand().length());
     }
 
