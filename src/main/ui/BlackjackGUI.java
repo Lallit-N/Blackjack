@@ -18,15 +18,15 @@ import java.io.IOException;
 public class BlackjackGUI extends JFrame implements ActionListener {
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 900;
-    private static final Color TITLE_COLOUR = new Color(0, 0, 0);
-    private static final Color TEXT_COLOUR = new Color(0, 0, 0);
+    private static final Color TITLE_COLOUR = new Color(0, 0, 0, 255);
+    private static final Color TEXT_COLOUR = new Color(0, 0, 0, 255);
     private static final Color BACKGROUND_COLOUR = new Color(29, 101, 31);
     private static final Color BUTTON_COLOUR = new Color(246, 198, 115, 255);
     private static final Color CASH_OUT_BUTTON_COLOUR = new Color(109, 255, 71);
-    private static final Font TITLE_FONT = new Font("Arial", Font.ITALIC, 80);
-    private static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 42);
-    private static final Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 26);
-    private static final Font CASH_OUT_BUTTON_FONT = new Font("Arial", Font.PLAIN, 30);
+    private static final Font TITLE_FONT = new Font("Century Gothic", Font.PLAIN, 80);
+    private static final Font LABEL_FONT = new Font("Century Gothic", Font.PLAIN, 45);
+    private static final Font BUTTON_FONT = new Font("Century Gothic", Font.PLAIN, 26);
+    private static final Font CASH_OUT_BUTTON_FONT = new Font("Century Gothic", Font.PLAIN, 32);
     private static final FlowLayout CARDS_LAYOUT = new FlowLayout(FlowLayout.LEFT, 5, 2);
     private static final FlowLayout BUTTONS_LAYOUT = new FlowLayout();
     private static final Dimension BUTTON_DIMENSION = new Dimension(140, 36);
@@ -35,13 +35,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private Player player;
     private Dealer dealer;
     private boolean standPlayer = false;
+    private boolean doubled = false;
     private final JsonWriter jsonWriter;
     private final JsonReader jsonReader;
     private JPanel panel;
     private JPanel buttons;
     private JPanel betPanel;
     private JTextField betText;
-    private boolean doubled = false;
 
 
     // MODIFIES: this
@@ -172,7 +172,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         title.setFont(TITLE_FONT);
         title.setForeground(TITLE_COLOUR);
         title.setHorizontalAlignment(JLabel.CENTER);
-        title.setBounds(100, 30, 1000, 80);
+        title.setBounds(100, 20, 1000, 80);
 
         panel.add(title);
     }
@@ -183,13 +183,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         JLabel yourHand = new JLabel("Your Hand");
         yourHand.setFont(LABEL_FONT);
         yourHand.setForeground(TEXT_COLOUR);
-        yourHand.setBounds(100, 410, 300, 60);
+        yourHand.setBounds(100, 400, 300, 60);
 
         if (player.getHand().length() > 0) {
             JLabel yourValue = new JLabel("Value: " + player.getHand().getDeckValue());
             yourValue.setFont(LABEL_FONT);
             yourValue.setForeground(TEXT_COLOUR);
-            yourValue.setBounds(900, 410, 300, 60);
+            yourValue.setBounds(900, 400, 300, 60);
             panel.add(yourValue);
         }
 
@@ -209,19 +209,19 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         JLabel dealerHand = new JLabel("Dealer Hand");
         dealerHand.setFont(LABEL_FONT);
         dealerHand.setForeground(TEXT_COLOUR);
-        dealerHand.setBounds(100, 130, 400, 60);
+        dealerHand.setBounds(100, 120, 400, 60);
 
         if (standPlayer) {
             JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getDeckValue());
             dealerValue.setFont(LABEL_FONT);
             dealerValue.setForeground(TEXT_COLOUR);
-            dealerValue.setBounds(900, 130, 300, 60);
+            dealerValue.setBounds(900, 120, 300, 60);
             panel.add(dealerValue);
         } else if (dealer.getHand().length() == 2) {
             JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getCard(0).getCardValue());
             dealerValue.setFont(LABEL_FONT);
             dealerValue.setForeground(TEXT_COLOUR);
-            dealerValue.setBounds(900, 130, 300, 60);
+            dealerValue.setBounds(900, 120, 300, 60);
             panel.add(dealerValue);
         }
         panel.add(dealerHand);
@@ -286,7 +286,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void initBet() {
         betPanel = new JPanel();
         betPanel.setLayout(BUTTONS_LAYOUT);
-        betPanel.setBounds(325, 750, 550, 50);
+        betPanel.setBounds(300, 750, 600, 50);
         betPanel.setBackground(BACKGROUND_COLOUR);
 
         initBetText();
