@@ -12,7 +12,7 @@ initial bet. In the case where the Player's hand has a smaller value than the De
 money that they have bet on their hand. This game will occur in a cycle until either the Player chooses to leave and
 cash out, or the Player goes bankrupt.\
 I want to make this app for anyone and everyone to use as a source of entertainment. I am interested in this project
-because I like to play Blackjack for fun with my friends online, so I thought it would be really interesting to try 
+because I like to play Blackjack for fun with my friends online, so I thought it would be fascinating to try 
 to create the game myself as my first personal project in Java.
 
 
@@ -21,7 +21,7 @@ to create the game myself as my first personal project in Java.
 - As a user, I want to be able to buy in to the game
 - As a user, I want to be able to place a bet and receive two cards
 - As a user, I want to be able to add another card to my hand (add X's to Y)
-- As a user, I want to be able to choose whether to **hit**, **stand**, or **double** my bet and hit
+- As a user, I want to be able to choose whether to **hit**, **stand**, or **double**
 - As a user, I want to be able to cash out from the game (save my total balance)
 - As a user, when I start the app, I want to choose to either load my last player balance or start as a new player
 

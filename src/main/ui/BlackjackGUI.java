@@ -17,10 +17,13 @@ import java.io.IOException;
 // Blackjack game GUI
 public class BlackjackGUI extends JFrame implements ActionListener {
     private static final int WIDTH = 1200;
-    private static final int HEIGHT = 800;
+    private static final int HEIGHT = 900;
+    private static final Color TITLE_COLOUR = new Color(0, 0, 0);
     private static final Color TEXT_COLOUR = new Color(0, 0, 0);
     private static final Color BACKGROUND_COLOUR = new Color(29, 101, 31);
     private static final Color BUTTON_COLOUR = new Color(246, 198, 115, 255);
+    private static final Color CASH_OUT_BUTTON_COLOUR = new Color(109, 255, 71);
+    private static final Font TITLE_FONT = new Font("Arial", Font.ITALIC, 80);
     private static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 42);
     private static final Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 26);
     private static final Font CASH_OUT_BUTTON_FONT = new Font("Arial", Font.PLAIN, 30);
@@ -38,6 +41,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private JPanel buttons;
     private JPanel betPanel;
     private JTextField betText;
+    private boolean doubled = false;
 
 
     // MODIFIES: this
@@ -156,8 +160,21 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: calls the methods that initialize all of the JLabels
     private void initLabels() {
+        initTitle();
         initPlayerLabels();
         initDealerLabels();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes the main blackjack title
+    private void initTitle() {
+        JLabel title = new JLabel("BLACKJACK");
+        title.setFont(TITLE_FONT);
+        title.setForeground(TITLE_COLOUR);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setBounds(100, 30, 1000, 80);
+
+        panel.add(title);
     }
 
     // MODIFIES: this
@@ -166,20 +183,20 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         JLabel yourHand = new JLabel("Your Hand");
         yourHand.setFont(LABEL_FONT);
         yourHand.setForeground(TEXT_COLOUR);
-        yourHand.setBounds(100, 310, 300, 60);
+        yourHand.setBounds(100, 410, 300, 60);
 
         if (player.getHand().length() > 0) {
             JLabel yourValue = new JLabel("Value: " + player.getHand().getDeckValue());
             yourValue.setFont(LABEL_FONT);
             yourValue.setForeground(TEXT_COLOUR);
-            yourValue.setBounds(900, 310, 300, 60);
+            yourValue.setBounds(900, 410, 300, 60);
             panel.add(yourValue);
         }
 
         JLabel yourBalance = new JLabel("Balance: $" + player.getBalance());
         yourBalance.setFont(LABEL_FONT);
         yourBalance.setForeground(TEXT_COLOUR);
-        yourBalance.setBounds(225, 700, 750, 60);
+        yourBalance.setBounds(225, 800, 750, 60);
         yourBalance.setHorizontalAlignment(JLabel.CENTER);
 
         panel.add(yourBalance);
@@ -192,19 +209,19 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         JLabel dealerHand = new JLabel("Dealer Hand");
         dealerHand.setFont(LABEL_FONT);
         dealerHand.setForeground(TEXT_COLOUR);
-        dealerHand.setBounds(100, 30, 400, 60);
+        dealerHand.setBounds(100, 130, 400, 60);
 
         if (standPlayer) {
             JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getDeckValue());
             dealerValue.setFont(LABEL_FONT);
             dealerValue.setForeground(TEXT_COLOUR);
-            dealerValue.setBounds(900, 30, 300, 60);
+            dealerValue.setBounds(900, 130, 300, 60);
             panel.add(dealerValue);
         } else if (dealer.getHand().length() == 2) {
             JLabel dealerValue = new JLabel("Value: " + dealer.getHand().getCard(0).getCardValue());
             dealerValue.setFont(LABEL_FONT);
             dealerValue.setForeground(TEXT_COLOUR);
-            dealerValue.setBounds(900, 30, 300, 60);
+            dealerValue.setBounds(900, 130, 300, 60);
             panel.add(dealerValue);
         }
         panel.add(dealerHand);
@@ -215,7 +232,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void initPlayerCards() {
         JPanel playerCards = new JPanel();
         playerCards.setLayout(CARDS_LAYOUT);
-        playerCards.setBounds(100, 360, 1000, 204);
+        playerCards.setBounds(100, 460, 1000, 204);
         playerCards.setBackground(BACKGROUND_COLOUR);
 
         for (Card c : player.getHand().getCards()) {
@@ -231,7 +248,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void initDealerCards() {
         JPanel dealerCards = new JPanel();
         dealerCards.setLayout(CARDS_LAYOUT);
-        dealerCards.setBounds(100, 80, 1000, 204);
+        dealerCards.setBounds(100, 180, 1000, 204);
         dealerCards.setBackground(BACKGROUND_COLOUR);
 
         if (standPlayer) {
@@ -254,7 +271,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void initButtons() {
         buttons = new JPanel();
         buttons.setLayout(BUTTONS_LAYOUT);
-        buttons.setBounds(350, 600, 500, 50);
+        buttons.setBounds(350, 700, 500, 50);
         buttons.setBackground(BACKGROUND_COLOUR);
         hitButton();
         doubleButton();
@@ -269,7 +286,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void initBet() {
         betPanel = new JPanel();
         betPanel.setLayout(BUTTONS_LAYOUT);
-        betPanel.setBounds(325, 650, 550, 50);
+        betPanel.setBounds(325, 750, 550, 50);
         betPanel.setBackground(BACKGROUND_COLOUR);
 
         initBetText();
@@ -375,15 +392,13 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // MODIFIES: this
     // EFFECTS: initializes the Cash Out button and adds it to the main panel
     private void cashOutButton() {
-        Color cashGreen = new Color(109, 255, 71);
-
         JButton cashOutBut = new JButton("CA$H OUT");
-        cashOutBut.setBackground(cashGreen);
+        cashOutBut.setBackground(CASH_OUT_BUTTON_COLOUR);
         cashOutBut.setForeground(TEXT_COLOUR);
         cashOutBut.setFont(CASH_OUT_BUTTON_FONT);
         cashOutBut.setActionCommand("leave");
         cashOutBut.addActionListener(this);
-        cashOutBut.setBounds(990, 715, 200, 50);
+        cashOutBut.setBounds(990, 815, 200, 50);
         cashOutBut.setToolTipText("Save your current balance and exit");
         panel.add(cashOutBut);
     }
@@ -452,7 +467,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
     // EFFECTS: display error pop up with given message string
     private void errorPopUp(String message) {
-        JOptionPane.showConfirmDialog(this, message, "", JOptionPane.DEFAULT_OPTION,
+        JOptionPane.showConfirmDialog(this, message, "Sorry", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -462,21 +477,26 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         if (player.getBet() == 0) {
             placeBet(player.getBalance());
         } else {
-            errorPopUp("You cannot place a bet in the middle of the round");
+            errorPopUp("You can't place a bet in the middle of the round");
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: draw a card to the Player's hand;
-    //          if the Player busts, display bust message and ask to play again
+    // EFFECTS: if Player has not yet doubled, draw a card to the Player's hand and
+    //          if the Player busts, display bust message and ask to play again;
+    //          otherwise, display error pop up
     private void doHit() {
-        if (player.getHand().length() >= 2) {
-            player.hit();
-            initPanel();
+        if (!doubled) {
+            if (player.getHand().length() >= 2) {
+                player.hit();
+                initPanel();
 
-            playerBust();
+                playerBust();
+            } else {
+                errorPopUp("You must place a bet before you can hit");
+            }
         } else {
-            errorPopUp("You must place a bet before you can hit");
+            errorPopUp("You can't hit after you Double");
         }
     }
 
@@ -518,6 +538,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     private void result(String message, String title) {
         dealer = new Dealer();
         standPlayer = false;
+        doubled = false;
 
         JOptionPane.showConfirmDialog(this, message, title, JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
@@ -550,6 +571,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     //          if the Player cannot double and hit, then display pop up message telling them why
     private void doDouble() {
         if (player.getHand().length() == 2 && player.getBalance() >= player.getBet()) {
+            doubled = true;
             player.doubleBet();
             initPanel();
             playerBust();

@@ -58,5 +58,4 @@ public class Card {
             return 10;
         }
     }
-
 }
