@@ -1,5 +1,6 @@
 package ui;
 
+import exceptions.IllegalHandSizeException;
 import model.Dealer;
 import model.Player;
 import persistence.JsonReader;
@@ -20,8 +21,8 @@ public class Blackjack {
     private Scanner input;
     private boolean keepRunning = true;
     private int betAmount;
-    private JsonWriter jsonWriter;
-    private JsonReader jsonReader;
+    private final JsonWriter jsonWriter;
+    private final JsonReader jsonReader;
 
     // MODIFIES: this
     // EFFECTS: initializes the JSON reader and writer, then runs the Blackjack game
@@ -185,7 +186,11 @@ public class Blackjack {
             if (command <= player.getBalance() && command > 0) {
                 player.placeBet(command);
                 player.drawCards();
-                dealer.drawCards();
+                try {
+                    dealer.drawCards();
+                } catch (IllegalHandSizeException e) {
+                    System.out.println("Dealer's hand is not empty");
+                }
                 notDone = false;
             } else {
                 System.out.println("Please enter an amount less than your balance...");

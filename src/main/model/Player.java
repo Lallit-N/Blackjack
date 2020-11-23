@@ -125,7 +125,6 @@ public class Player implements Writable {
     }
 
 
-    // REQUIRES: Player must have drawn 2 cards then hit at least once
     // MODIFIES: this
     // EFFECTS: if playerHand is a bust, lose bet money and get an empty hand of cards and return true;
     //          otherwise, return false

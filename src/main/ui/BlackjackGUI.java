@@ -1,5 +1,6 @@
 package ui;
 
+import exceptions.IllegalHandSizeException;
 import model.Card;
 import model.Dealer;
 import model.Player;
@@ -78,7 +79,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
         try {
             player = jsonReader.read();
         } catch (IOException e) {
-            System.out.println("There is no saved game");
+            errorPopUp("Could not load Player from file: " + JSON_STORE + "\nPlease restart the app.");
         }
         int result = JOptionPane.showConfirmDialog(this,
                 "Would you like to load your saved balance of $" + player.getBalance() + "?"
@@ -431,7 +432,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
             try {
                 int betAmount = Integer.parseInt(betText.getText());
                 if (betAmount <= player.getBalance() && betAmount > 0) {
-                    placeBet(betAmount);
+                    doPlaceBet(betAmount);
                 } else if (betAmount > player.getBalance()) {
                     errorPopUp("Please enter an amount less than your balance");
                 } else {
@@ -447,13 +448,17 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
     // MODIFIES: this
     // EFFECTS: places bet given the bet amount and updates the panel, then checks if player has blackjack
-    private void placeBet(int betAmount) {
-        dealer = new Dealer();
-        player.placeBet(betAmount);
-        player.drawCards();
-        dealer.drawCards();
-        initPanel();
-        checkBlackjack();
+    private void doPlaceBet(int betAmount) {
+        try {
+            dealer = new Dealer();
+            player.placeBet(betAmount);
+            player.drawCards();
+            dealer.drawCards();
+            initPanel();
+            checkBlackjack();
+        } catch (IllegalHandSizeException e) {
+            errorPopUp("Dealer's hand is not empty");
+        }
     }
 
     // MODIFIES: this
@@ -467,7 +472,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 
     // EFFECTS: display error pop up with given message string
     private void errorPopUp(String message) {
-        JOptionPane.showConfirmDialog(this, message, "Sorry", JOptionPane.DEFAULT_OPTION,
+        JOptionPane.showConfirmDialog(this, message, "Uh-Oh...", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -475,7 +480,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
     // EFFECTS: place bet equal to player balance
     private void doAllIn() {
         if (player.getBet() == 0) {
-            placeBet(player.getBalance());
+            doPlaceBet(player.getBalance());
         } else {
             errorPopUp("You can't place a bet in the middle of the round");
         }

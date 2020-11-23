@@ -10,7 +10,7 @@ import static model.Card.SUITS;
 // represents a deck of cards
 public class Deck {
 
-    private List<Card> cards;
+    private final List<Card> cards;
     private int deckValue;
 
 
@@ -24,7 +24,7 @@ public class Deck {
     // REQUIRES: method can only be called on an empty deck designated to be a playing deck
     // MODIFIES: this
     // EFFECTS: create a full deck of 52 cards
-    public void playingDeck() {
+    public void makePlayingDeck() {
         for (String s : SUITS) {
             for (String fn : FACE_NAMES) {
                 cards.add(new Card(fn, s));
@@ -55,13 +55,13 @@ public class Deck {
     // EFFECTS: add a random card from the playingDeck to the current deck
     public void drawCard() {
         Deck playingDeck = new Deck();
-        playingDeck.playingDeck();
+        playingDeck.makePlayingDeck();
         int randomInt = new Random().nextInt(playingDeck.length());
         cards.add(playingDeck.getCard(randomInt));
     }
 
 
-    // EFFECTS: return the card at index index from the deck
+    // EFFECTS: return the card at given index from the deck
     public Card getCard(int index) {
         return cards.get(index);
     }

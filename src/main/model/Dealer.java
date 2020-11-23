@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.IllegalHandSizeException;
+
 // represents the Blackjack Dealer with a hand of cards
 public class Dealer {
 
@@ -16,16 +18,18 @@ public class Dealer {
     }
 
 
-    // REQUIRES: dealerHand must be empty
     // MODIFIES: this
-    // EFFECTS: draw 2 cards to start the game
-    public void drawCards() {
-        dealerHand.drawCard();
-        dealerHand.drawCard();
+    // EFFECTS: draw 2 cards to start the game; throws, IllegalHandSizeException if dealerHand is not empty
+    public void drawCards() throws IllegalHandSizeException {
+        if (dealerHand.length() != 0) {
+            throw new IllegalHandSizeException();
+        } else {
+            dealerHand.drawCard();
+            dealerHand.drawCard();
+        }
     }
 
 
-    // REQUIRES: dealerHand must contain at least 2 cards
     // MODIFIES: this
     // EFFECTS: adds another card to dealerHand until deck value >= 17
     public void stand(Player player) {
@@ -36,7 +40,6 @@ public class Dealer {
     }
 
 
-    // REQUIRES: Dealer must have drawn 2 cards then hit at least once
     // MODIFIES: this
     // EFFECTS: if dealerHand is a bust, then reset the hand of cards and return true;
     //          otherwise, return false

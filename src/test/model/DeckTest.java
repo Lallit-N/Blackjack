@@ -18,7 +18,7 @@ public class DeckTest {
 
     @Test
     void testPlayingDeck() {
-        testDeck.playingDeck();
+        testDeck.makePlayingDeck();
         assertEquals(52, testDeck.length());
     }
 
@@ -48,7 +48,7 @@ public class DeckTest {
 
     @Test
     void testGetCard() {
-        testDeck.playingDeck();
+        testDeck.makePlayingDeck();
         Card c1 = new Card("Ace", "Diamonds");
 
         assertEquals(c1.printCard(), testDeck.getCard(0).printCard());
@@ -56,7 +56,7 @@ public class DeckTest {
 
     @Test
     void testGetCards() {
-        testDeck.playingDeck();
+        testDeck.makePlayingDeck();
         assertEquals(52, testDeck.getCards().size());
     }
 

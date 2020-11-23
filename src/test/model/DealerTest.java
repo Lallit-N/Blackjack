@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.IllegalHandSizeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +17,26 @@ public class DealerTest {
     @Test
     void testDrawCards() {
         assertEquals(0, testDealer.getHand().length());
-        testDealer.drawCards();
+        try {
+            testDealer.drawCards();
+            // pass
+        } catch (IllegalHandSizeException e) {
+            fail("Exception should not have been thrown");
+        }
         assertEquals(2, testDealer.getHand().length());
+    }
+
+    @Test
+    void testDrawCardsException() {
+        testDealer.getHand().drawCard();
+        assertEquals(1, testDealer.getHand().length());
+        try {
+            testDealer.drawCards();
+            fail("Exception should have been thrown");
+        } catch (IllegalHandSizeException e) {
+            // pass
+        }
+        assertEquals(1, testDealer.getHand().length());
     }
 
     @Test

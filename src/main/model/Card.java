@@ -6,9 +6,9 @@ public class Card {
     public static final String[] SUITS = {"Diamonds", "Clubs", "Hearts", "Spades"};
     public static final String[] FACE_NAMES =
             {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-    private int cardValue;
-    private String faceName;
-    private String suit;
+    private final int cardValue;
+    private final String faceName;
+    private final String suit;
 
 
     // REQUIRES: faceName must be one of FACE_NAMES and suit must be one of SUITS
@@ -16,7 +16,7 @@ public class Card {
     public Card(String faceName, String suit) {
         this.faceName = faceName;
         this.suit = suit;
-        cardValue = getCardValue();
+        cardValue = setCardValue();
     }
 
 
@@ -33,9 +33,14 @@ public class Card {
         return suit;
     }
 
-
-    // EFFECTS: return the value associated with the card's faceNamed
     public int getCardValue() {
+        return cardValue;
+    }
+
+
+    // MODIFIES: this
+    // EFFECTS: set the value associated to the card's faceName
+    public int setCardValue() {
         if ("Ace".equals(this.getFaceName())) {
             return 11;
         } else if ("Two".equals(this.getFaceName())) {

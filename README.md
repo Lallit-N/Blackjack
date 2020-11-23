@@ -26,3 +26,21 @@ to create the game myself as my first personal project in Java.
 - As a user, when I start the app, I want to choose to either load my last player balance or start as a new player
 
 
+## Phase 4: Task 2
+I chose to implement:
+- Test and design a class in your model package that is robust.  You must have at least one method that throws a 
+checked exception.  You must have one test for the case where the exception is expected and another where the exception 
+is not expected.
+
+The robust class is the Dealer class. The method that throws the checked exception is the drawCards() method.
+
+
+## Phase 4: Task 3
+In my UML class diagram, I chose to use an aggregation from the Deck class to the Card class because the cards are a
+part of the Deck (in other words, you can't have a deck of cards without cards).\
+If I had more time to work on this project, I would:
+- reduce the duplication between Dealer and Player by creating a superclass.
+- make Deck an abstract class so that Player and Dealer extend it because most of the methods in Dealer and Player make
+changes to their respective Deck objects.
+
+
