@@ -19,7 +19,7 @@ public class Dealer {
 
 
     // MODIFIES: this
-    // EFFECTS: draw 2 cards to start the game; throws, IllegalHandSizeException if dealerHand is not empty
+    // EFFECTS: draw 2 cards to start the game; throws IllegalHandSizeException if dealerHand is not empty
     public void drawCards() throws IllegalHandSizeException {
         if (dealerHand.length() != 0) {
             throw new IllegalHandSizeException();
